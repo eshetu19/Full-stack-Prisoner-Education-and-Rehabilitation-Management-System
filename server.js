@@ -47,23 +47,44 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Database connection
-const db = mysql.createConnection({
-  host: process.env.DB_HOST || "localhost",
-  user: process.env.DB_USER || "root",
-  password: process.env.DB_PASSWORD || "",
-  database: process.env.DB_NAME || "prison_rehab_system",
-  port: process.env.DB_PORT || 3306,
-});
+// Database connection with retry logic
+let db;
 
-db.connect((err) => {
-  if (err) {
-    console.error("Database connection failed:", err);
-    return;
-  }
-  console.log("Connected to MySQL database");
-});
+function connectDatabase() {
+  db = mysql.createConnection({
+    host: process.env.DB_HOST || "localhost",
+    user: process.env.DB_USER || "root",
+    password: process.env.DB_PASSWORD || "",
+    database: process.env.DB_NAME || "prison_rehab_system",
+    port: process.env.DB_PORT || 3306,
+    connectTimeout: 60000,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+  });
 
-//  ROLE-BASED MIDDLEWARE 
+  db.connect((err) => {
+    if (err) {
+      console.error("Database connection failed:", err.message);
+      console.log("Retrying connection in 2 seconds...");
+      setTimeout(connectDatabase, 2000);
+      return;
+    }
+    console.log("✅ Connected to MySQL database");
+  });
+
+  db.on("error", (err) => {
+    console.error("Database error:", err.message);
+    if (err.code === "PROTOCOL_CONNECTION_LOST" || err.code === "ECONNRESET") {
+      console.log("Reconnecting to database...");
+      connectDatabase();
+    }
+  });
+}
+
+connectDatabase();
+
+//  ROLE-BASED MIDDLEWARE
 
 // Log user activity - MUST BE DEFINED BEFORE USE
 function logActivity(req, action, details = null) {
@@ -114,7 +135,7 @@ function isAdminOrInstructor(req, res, next) {
   next();
 }
 
-//  AUTHENTICATION ROUTES 
+//  AUTHENTICATION ROUTES
 
 app.post("/api/login", async (req, res) => {
   const { username, password } = req.body;
@@ -193,7 +214,7 @@ app.get("/api/user-role", isAuthenticated, (req, res) => {
   });
 });
 
-//  PRISONER ROUTES WITH ROLE-BASED ACCESS 
+//  PRISONER ROUTES WITH ROLE-BASED ACCESS
 
 app.get("/api/prisoners", isAuthenticated, (req, res) => {
   const { search, block, status, page = 1, limit = 10 } = req.query;
@@ -452,7 +473,7 @@ app.delete("/api/prisoners/:id", isAdmin, (req, res) => {
   );
 });
 
-// PROGRAM ROUTES 
+// PROGRAM ROUTES
 
 app.get("/api/programs", isAuthenticated, (req, res) => {
   const { type, status } = req.query;
@@ -515,7 +536,7 @@ app.post("/api/programs", isAdmin, upload.single("thumbnail"), (req, res) => {
     },
   );
 });
-//  DASHBOARD STATS 
+//  DASHBOARD STATS
 app.get("/api/dashboard/stats", isAuthenticated, (req, res) => {
   const userRole = req.session.role;
   const userId = req.session.userId;
@@ -577,7 +598,7 @@ app.get("/api/dashboard/stats", isAuthenticated, (req, res) => {
     });
 });
 
-//  DASHBOARD RECENT ACTIVITY 
+//  DASHBOARD RECENT ACTIVITY
 app.get("/api/dashboard/recent-activity", isAuthenticated, (req, res) => {
   const userRole = req.session.role;
   const userId = req.session.userId;
@@ -625,7 +646,7 @@ app.get("/api/dashboard/recent-activity", isAuthenticated, (req, res) => {
   });
 });
 
-//  REPORTS 
+//  REPORTS
 app.get("/api/reports/program-stats", isAuthenticated, (req, res) => {
   const userRole = req.session.role;
   const userId = req.session.userId;
@@ -683,7 +704,7 @@ app.get("/api/reports/program-stats", isAuthenticated, (req, res) => {
   });
 });
 
-//  ENROLLMENT ROUTES 
+//  ENROLLMENT ROUTES
 
 // Get all enrollments with pagination and stats
 app.get("/api/enrollments", isAuthenticated, (req, res) => {
@@ -896,7 +917,7 @@ app.delete("/api/enrollments/:id", isAdmin, (req, res) => {
   );
 });
 
-//  STAFF ROUTES - Admin only 
+//  STAFF ROUTES - Admin only
 app.get("/api/staff", isAdmin, (req, res) => {
   const { search, role, facility, status, page = 1, limit = 10 } = req.query;
   let query = "SELECT * FROM staff WHERE 1=1";
@@ -985,7 +1006,7 @@ app.delete("/api/staff/:id", isAdmin, (req, res) => {
   });
 });
 
-// SESSION ROUTES 
+// SESSION ROUTES
 app.post("/api/sessions", isAdminOrInstructor, (req, res) => {
   const { title, location, time, duration, coordinator, prisoner_id } =
     req.body;
@@ -1041,7 +1062,7 @@ app.delete("/api/sessions/:id", isAdminOrInstructor, (req, res) => {
   );
 });
 
-//  FACILITY MANAGEMENT 
+//  FACILITY MANAGEMENT
 app.get("/api/facilities", isAdmin, (req, res) => {
   db.query("SELECT * FROM facilities", (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
@@ -1084,7 +1105,7 @@ app.delete("/api/facilities/:id", isAdmin, (req, res) => {
   );
 });
 
-//  PASSWORD CHANGE ROUTE 
+//  PASSWORD CHANGE ROUTE
 app.post("/api/change-password", isAuthenticated, async (req, res) => {
   const { currentPassword, newPassword } = req.body;
   const userId = req.session.userId;
@@ -1122,7 +1143,7 @@ app.post("/api/change-password", isAuthenticated, async (req, res) => {
   );
 });
 
-//  PROGRAM STATS ENDPOINT 
+//  PROGRAM STATS ENDPOINT
 app.get("/api/programs/:id/stats", isAuthenticated, (req, res) => {
   const programId = req.params.id;
 
@@ -1146,7 +1167,7 @@ app.get("/api/programs/:id/stats", isAuthenticated, (req, res) => {
   );
 });
 
-//  PROGRAM ENROLLMENTS ENDPOINT 
+//  PROGRAM ENROLLMENTS ENDPOINT
 app.get("/api/programs/:id/enrollments", isAuthenticated, (req, res) => {
   const programId = req.params.id;
   const userRole = req.session.role;
@@ -1170,10 +1191,10 @@ app.get("/api/programs/:id/enrollments", isAuthenticated, (req, res) => {
   });
 });
 
-//  SERVE HTML PAGES 
+//  SERVE HTML PAGES
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
-}); 
+});
 
 app.get("/dashboard.html", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "dashboard.html"));
