@@ -47,7 +47,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Database connection
-// Database connection pool (PRODUCTION READY)
+// Database connection with Pool (Production Ready)
 const db = mysql.createPool({
   host: process.env.DB_HOST || "localhost",
   user: process.env.DB_USER || "root",
@@ -61,19 +61,31 @@ const db = mysql.createPool({
   keepAliveInitialDelay: 10000,
 });
 
-// Test the connection
+// Test connection
 db.getConnection((err, connection) => {
   if (err) {
     console.error("❌ Database connection failed:", err.message);
-    console.error("Please check your environment variables:");
+    console.error("Environment variables:");
     console.error("  DB_HOST:", process.env.DB_HOST);
     console.error("  DB_USER:", process.env.DB_USER);
     console.error("  DB_NAME:", process.env.DB_NAME);
     console.error("  DB_PORT:", process.env.DB_PORT);
-    process.exit(1);
+    console.error(
+      "  DB_PASSWORD:",
+      process.env.DB_PASSWORD ? "***SET***" : "NOT SET",
+    );
   } else {
     console.log("✅ Connected to MySQL database");
+    console.log("   Host:", process.env.DB_HOST);
+    console.log("   Database:", process.env.DB_NAME);
     connection.release();
+
+    // Keep connection alive
+    setInterval(() => {
+      db.query("SELECT 1", (err) => {
+        if (err) console.error("Keep-alive failed:", err.message);
+      });
+    }, 30000);
   }
 });
 
