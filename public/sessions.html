@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sessions - Rehab System</title>
+    <!-- Boxicons CSS -->
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      .session-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: transform 0.2s;
+      }
+      .session-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+      .session-date {
+        background: var(--primary-color);
+        color: white;
+        padding: 10px 15px;
+        border-radius: 8px;
+        text-align: center;
+        min-width: 80px;
+      }
+      .session-date .day {
+        font-size: 24px;
+        font-weight: bold;
+      }
+      .session-date .month {
+        font-size: 12px;
+      }
+      .session-info {
+        flex: 1;
+        margin-left: 20px;
+      }
+      .calendar-view {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <h2>🏛️ Rehab System</h2>
+          <p>Prisoner Education & Rehabilitation</p>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="/dashboard.html" class="nav-item"
+            ><i class="bx bxs-dashboard"></i> Dashboard</a
+          >
+          <a href="/prisoners.html" class="nav-item"
+            ><i class="bx bxs-group"></i> Prisoners</a
+          >
+          <a href="/gallery.html" class="nav-item"
+            ><i class="bx bxs-image"></i> Gallery</a
+          >
+          <a href="/programs.html" class="nav-item"
+            ><i class="bx bxs-book"></i> Programs</a
+          >
+          <a href="/enrollments.html" class="nav-item"
+            ><i class="bx bxs-graduation"></i> Enrollments</a
+          >
+          <a href="/sessions.html" class="nav-item"
+            ><i class="bx bxs-calendar"></i> Sessions</a
+          >
+          <a href="/staff.html" class="nav-item"
+            ><i class="bx bxs-user-badge"></i> Staff</a
+          >
+          <a href="/reports.html" class="nav-item"
+            ><i class="bx bxs-report"></i> Reports</a
+          >
+          <a href="/settings.html" class="nav-item"
+            ><i class="bx bxs-cog"></i> Settings</a
+          >
+        </nav>
+      </aside>
+
+      <div class="main-content">
+        <div class="top-bar">
+          <h1 class="page-title">Session Management</h1>
+          <div class="user-menu">
+            <span class="user-name" id="userName">User</span>
+            <button
+              id="themeToggle"
+              class="theme-toggle"
+              onclick="toggleTheme()"
+            >
+              <i class="bx bx-moon"></i>
+            </button>
+            <button class="logout-btn" onclick="handleLogout()">Logout</button>
+          </div>
+        </div>
+
+        <div class="content-area">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-title">Total Sessions</div>
+              <div class="stat-value" id="totalSessions">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-title">Completed</div>
+              <div class="stat-value" id="completedSessions">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-title">Scheduled</div>
+              <div class="stat-value" id="scheduledSessions">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-title">Attendance Rate</div>
+              <div class="stat-value" id="attendanceRate">0%</div>
+            </div>
+          </div>
+
+          <div class="search-bar">
+            <input
+              type="text"
+              id="searchInput"
+              class="search-input"
+              placeholder="Search sessions..."
+            />
+            <input type="date" id="dateFilter" class="filter-select" />
+            <select id="statusFilter" class="filter-select">
+              <option value="all">All Status</option>
+              <option value="Scheduled">Scheduled</option>
+              <option value="Completed">Completed</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+            <button class="btn-primary" onclick="openScheduleModal()">
+              + Schedule Session
+            </button>
+          </div>
+
+          <div id="sessionsList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Schedule Session Modal -->
+    <div id="scheduleModal" class="modal">
+      <div class="modal-content" style="max-width: 500px">
+        <div class="modal-header">
+          <h3>Schedule Session</h3>
+          <span class="close-modal" onclick="closeModal('scheduleModal')"
+            >&times;</span
+          >
+        </div>
+        <form id="sessionForm">
+          <div class="form-group">
+            <label>Title</label>
+            <input
+              type="text"
+              name="title"
+              required
+              placeholder="e.g., Vocational Workshop"
+            />
+          </div>
+          <div class="form-group">
+            <label>Location</label>
+            <input
+              type="text"
+              name="location"
+              required
+              placeholder="e.g., Workshop Building"
+            />
+          </div>
+          <div class="form-group">
+            <label>Date & Time</label>
+            <input type="datetime-local" name="time" required />
+          </div>
+          <div class="form-group">
+            <label>Duration</label>
+            <input
+              type="text"
+              name="duration"
+              placeholder="e.g., 2 hours"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label>Coordinator</label>
+            <input type="text" name="coordinator" required />
+          </div>
+          <div class="form-group">
+            <label>Prisoner (Optional)</label>
+            <select name="prisoner_id">
+              <option value="">No specific prisoner</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Notes</label>
+            <textarea
+              name="notes"
+              rows="3"
+              placeholder="Additional information..."
+            ></textarea>
+          </div>
+          <button type="submit" class="btn-primary">Schedule Session</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script>
+      async function loadSessions() {
+        try {
+          const response = await fetch("/api/sessions");
+          const sessions = await response.json();
+
+          document.getElementById("totalSessions").textContent =
+            sessions.length;
+          document.getElementById("completedSessions").textContent =
+            sessions.filter((s) => s.status === "Completed").length;
+          document.getElementById("scheduledSessions").textContent =
+            sessions.filter((s) => s.status === "Scheduled").length;
+
+          const container = document.getElementById("sessionsList");
+          container.innerHTML = sessions
+            .map((session) => {
+              const sessionDate = new Date(session.session_date);
+              return `
+                        <div class="session-card">
+                            <div class="session-date">
+                                <div class="day">${sessionDate.getDate()}</div>
+                                <div class="month">${sessionDate.toLocaleString("default", { month: "short" })}</div>
+                            </div>
+                            <div class="session-info">
+                                <h3>${session.title}</h3>
+                                <p>📍 ${session.location} | 👤 ${session.coordinator} | ⏱️ ${session.duration}</p>
+                                <small>Prisoner: ${session.prisoner_name || "Group Session"}</small>
+                            </div>
+                            <div>
+                                ${getStatusBadge(session.status)}
+                                <div class="action-icons" style="margin-top: 10px;">
+                                    <button class="edit-btn" onclick="editSession(${session.id})">✏️</button>
+                                    <button class="delete-btn" onclick="deleteSession(${session.id})">🗑️</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+            })
+            .join("");
+        } catch (error) {
+          console.error("Error loading sessions:", error);
+        }
+      }
+
+      async function openScheduleModal() {
+        // Load prisoners for dropdown
+        const prisoners = await API.getPrisoners();
+        const prisonerSelect = document.querySelector(
+          'select[name="prisoner_id"]',
+        );
+        prisonerSelect.innerHTML =
+          '<option value="">No specific prisoner</option>' +
+          prisoners.prisoners
+            .map(
+              (p) =>
+                `<option value="${p.id}">${p.name} (${p.id_number})</option>`,
+            )
+            .join("");
+
+        document.getElementById("scheduleModal").style.display = "flex";
+      }
+
+      document
+        .getElementById("sessionForm")
+        ?.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+          const data = {
+            title: formData.get("title"),
+            location: formData.get("location"),
+            time: formData.get("time"),
+            duration: formData.get("duration"),
+            coordinator: formData.get("coordinator"),
+            prisoner_id: formData.get("prisoner_id") || null,
+            notes: formData.get("notes"),
+          };
+
+          try {
+            const result = await API.addSession(data);
+            if (result.success) {
+              showNotification("Session scheduled successfully!");
+              closeModal("scheduleModal");
+              e.target.reset();
+              loadSessions();
+            }
+          } catch (error) {
+            showNotification("Failed to schedule session", "error");
+          }
+        });
+
+      async function deleteSession(id) {
+        if (confirm("Are you sure you want to cancel this session?")) {
+          try {
+            const response = await fetch(`/api/sessions/${id}`, {
+              method: "DELETE",
+            });
+            const result = await response.json();
+            if (result.success) {
+              showNotification("Session cancelled");
+              loadSessions();
+            }
+          } catch (error) {
+            showNotification("Failed to cancel session", "error");
+          }
+        }
+      }
+
+      function editSession(id) {
+        showNotification("Edit session feature coming soon", "info");
+      }
+
+      function closeModal(modalId) {
+        document.getElementById(modalId).style.display = "none";
+      }
+
+      async function handleLogout() {
+        await API.logout();
+        window.location.href = "/index.html";
+      }
+
+      async function checkAuth() {
+        const result = await API.checkAuth();
+        if (!result.authenticated) {
+          window.location.href = "/index.html";
+        } else {
+          document.getElementById("userName").textContent =
+            result.user?.username || "User";
+          loadSessions();
+        }
+      }
+
+      checkAuth();
+    </script>
+    <script src="/js/theme.js"></script>
+    <script src="/js/role-nav.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        displayUserInfo();
+        initRoleBasedNavigation();
+      });
+    </script>
+    <script src="/js/mobile.js"></script>
+  </body>
+</html>

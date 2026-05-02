@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Staff Management - Rehab System</title>
+    <!-- Boxicons CSS -->
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      .access-denied {
+        text-align: center;
+        padding: 60px;
+        background: var(--card-bg);
+        border-radius: 12px;
+        margin: 40px auto;
+        max-width: 500px;
+      }
+      .access-denied h2 {
+        color: var(--danger-color);
+        margin-bottom: 20px;
+      }
+      .access-denied p {
+        color: var(--text-color);
+        margin-bottom: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <h2>🏛️ Rehab System</h2>
+          <p>Prisoner Education & Rehabilitation</p>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="/dashboard.html" class="nav-item"
+            ><i class="bx bxs-dashboard"></i> Dashboard</a
+          >
+          <a href="/prisoners.html" class="nav-item"
+            ><i class="bx bxs-group"></i> Prisoners</a
+          >
+          <a href="/gallery.html" class="nav-item"
+            ><i class="bx bxs-image"></i> Gallery</a
+          >
+          <a href="/programs.html" class="nav-item"
+            ><i class="bx bxs-book"></i> Programs</a
+          >
+          <a href="/enrollments.html" class="nav-item"
+            ><i class="bx bxs-graduation"></i> Enrollments</a
+          >
+          <a href="/sessions.html" class="nav-item"
+            ><i class="bx bxs-calendar"></i> Sessions</a
+          >
+          <a href="/staff.html" class="nav-item"
+            ><i class="bx bxs-user-badge"></i> Staff</a
+          >
+          <a href="/reports.html" class="nav-item"
+            ><i class="bx bxs-report"></i> Reports</a
+          >
+          <a href="/settings.html" class="nav-item"
+            ><i class="bx bxs-cog"></i> Settings</a
+          >
+        </nav>
+      </aside>
+
+      <div class="main-content">
+        <div class="top-bar">
+          <h1 class="page-title">Staff Management</h1>
+          <div class="user-menu">
+            <span class="user-name" id="userName">User</span>
+            <button
+              id="themeToggle"
+              class="theme-toggle"
+              onclick="toggleTheme()"
+            >
+              <i class="bx bx-moon" style="color: #180303"></i>
+            </button>
+            <button class="logout-btn" onclick="handleLogout()">Logout</button>
+          </div>
+        </div>
+
+        <div class="content-area" id="staffContent">
+          <div class="spinner"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Staff Modal -->
+    <div id="addStaffModal" class="modal">
+      <div class="modal-content" style="max-width: 550px">
+        <div class="modal-header">
+          <h3>Add New Staff Information</h3>
+          <span class="close-modal" onclick="closeModal('addStaffModal')"
+            >&times;</span
+          >
+        </div>
+        <form id="addStaffForm" enctype="multipart/form-data">
+          <div class="form-group">
+            <label>Upload Image</label>
+            <input type="file" name="image" accept="image/*" />
+          </div>
+          <div class="form-group">
+            <label>Full Name *</label>
+            <input type="text" name="full_name" required />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Gender *</label>
+              <select name="gender" required>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Age *</label>
+              <input type="number" name="age" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Education *</label>
+            <input
+              type="text"
+              name="education"
+              placeholder="e.g., Masters in Psychology"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label>Facility/Prison *</label>
+            <select name="prison" id="facilitySelect" required>
+              <option value="">Select Facility</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Role *</label>
+            <select name="role" required>
+              <option value="">Select Role</option>
+              <option value="Lead Instructor">Lead Instructor</option>
+              <option value="Case Manager">Case Manager</option>
+              <option value="Lead Counselor">Lead Counselor</option>
+              <option value="Instructor">Instructor</option>
+              <option value="Security Liaison">Security Liaison</option>
+              <option value="Assistant Professor">Assistant Professor</option>
+            </select>
+          </div>
+          <div
+            style="
+              display: flex;
+              gap: 10px;
+              justify-content: flex-end;
+              margin-top: 20px;
+            "
+          >
+            <button
+              type="button"
+              class="btn-secondary"
+              onclick="closeModal('addStaffModal')"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="btn-primary">Add Staff</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Edit Staff Modal -->
+    <div id="editStaffModal" class="modal">
+      <div class="modal-content" style="max-width: 550px">
+        <div class="modal-header">
+          <h3>Edit Staff Information</h3>
+          <span class="close-modal" onclick="closeModal('editStaffModal')"
+            >&times;</span
+          >
+        </div>
+        <form id="editStaffForm">
+          <input type="hidden" id="editStaffId" />
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="editName" required />
+          </div>
+          <div class="form-group">
+            <label>Role</label>
+            <select id="editRole" required>
+              <option value="Lead Instructor">Lead Instructor</option>
+              <option value="Case Manager">Case Manager</option>
+              <option value="Lead Counselor">Lead Counselor</option>
+              <option value="Instructor">Instructor</option>
+              <option value="Security Liaison">Security Liaison</option>
+              <option value="Assistant Professor">Assistant Professor</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Facility</label>
+            <select id="editFacility" required>
+              <option value="Kaliti">Kaliti</option>
+              <option value="Daleti">Daleti</option>
+              <option value="Sebbeta">Sebbeta</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="editStatus" required>
+              <option value="Active">Active</option>
+              <option value="On leave">On Leave</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+          <div style="display: flex; gap: 10px; justify-content: flex-end">
+            <button
+              type="button"
+              class="btn-secondary"
+              onclick="closeModal('editStaffModal')"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="btn-primary">Update Staff</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- View Staff Modal -->
+    <div id="viewStaffModal" class="modal">
+      <div class="modal-content" style="max-width: 500px">
+        <div class="modal-header">
+          <h3>Staff Details</h3>
+          <span class="close-modal" onclick="closeModal('viewStaffModal')"
+            >&times;</span
+          >
+        </div>
+        <div id="viewStaffContent"></div>
+      </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/theme.js"></script>
+    <script src="/js/role-nav.js"></script>
+    <script>
+      // Utility Functions
+      function showNotification(message, type = "success") {
+        const notification = document.createElement("div");
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                border-radius: 8px;
+                z-index: 2000;
+                animation: slideIn 0.3s ease;
+                background: ${type === "success" ? "#2ecc71" : type === "error" ? "#e74c3c" : "#3498db"};
+                color: white;
+            `;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+      }
+
+      function getStatusBadge(status) {
+        const statusMap = {
+          Active: "status-active",
+          "On leave": "status-warning",
+          Inactive: "status-inactive",
+        };
+        const className = statusMap[status] || "status-active";
+        return `<span class="status-badge ${className}">${status}</span>`;
+      }
+
+      function formatDate(dateString) {
+        if (!dateString) return "N/A";
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return "N/A";
+        return date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+      }
+
+      let currentPage = 1;
+      let totalPages = 1;
+
+      async function loadStaff() {
+        try {
+          const search = document.getElementById("searchInput")?.value || "";
+          const role = document.getElementById("roleFilter")?.value || "all";
+          const facility =
+            document.getElementById("facilityFilter")?.value || "all";
+          const status =
+            document.getElementById("statusFilter")?.value || "all";
+
+          const response = await fetch(
+            `/api/staff?page=${currentPage}&limit=10&search=${search}&role=${role}&facility=${facility}&status=${status}`,
+          );
+          const data = await response.json();
+
+          document.getElementById("totalStaff").textContent = data.total || 0;
+          const activeInstructors = (data.staff || []).filter(
+            (s) =>
+              s.employment_status === "Active" &&
+              (s.role === "Instructor" || s.role === "Lead Instructor"),
+          ).length;
+          document.getElementById("activeInstructors").textContent =
+            activeInstructors;
+          const onLeaveCount = (data.staff || []).filter(
+            (s) => s.employment_status === "On leave",
+          ).length;
+          document.getElementById("onLeaveCount").textContent = onLeaveCount;
+
+          const tbody = document.getElementById("staffTable");
+          if (data.staff && data.staff.length > 0) {
+            tbody.innerHTML = data.staff
+              .map(
+                (staff) => `
+                        <tr>
+                            <td>
+                                ${staff.image_url ? `<img src="${staff.image_url}" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover; margin-right: 10px; vertical-align: middle;">` : '<span style="font-size: 24px; margin-right: 10px;">👤</span>'}
+                                ${staff.name || "N/A"}
+                            </td>
+                            <td>${staff.role || "N/A"}</td>
+                            <td>${staff.facility || "N/A"}</td>
+                            <td>${getStatusBadge(staff.employment_status)}</td>
+                            <td class="action-icons">
+                                <button class="view-btn" onclick="viewStaff(${staff.id})" title="View">👁️</button>
+                                <button class="edit-btn" onclick="editStaff(${staff.id})" title="Edit">✏️</button>
+                                <button class="delete-btn" onclick="deleteStaff(${staff.id})" title="Delete">🗑️</button>
+                            </td>
+                        </tr>
+                    `,
+              )
+              .join("");
+          } else {
+            tbody.innerHTML =
+              '<tr><td colspan="5" style="text-align: center;">No staff members found</td></tr>';
+          }
+
+          totalPages = Math.ceil((data.total || 0) / 10);
+          updatePagination();
+        } catch (error) {
+          console.error("Error loading staff:", error);
+          document.getElementById("staffTable").innerHTML =
+            '<tr><td colspan="5" style="text-align: center; color: red;">Error loading staff data</td></tr>';
+        }
+      }
+
+      function updatePagination() {
+        const paginationDiv = document.getElementById("pagination");
+        if (!paginationDiv) return;
+
+        if (totalPages <= 1) {
+          paginationDiv.innerHTML = "";
+          return;
+        }
+
+        let html = "";
+        html += `<button onclick="goToPage(1)" ${currentPage === 1 ? "disabled" : ""}>«</button>`;
+        for (
+          let i = Math.max(1, currentPage - 2);
+          i <= Math.min(totalPages, currentPage + 2);
+          i++
+        ) {
+          html += `<button class="${i === currentPage ? "active" : ""}" onclick="goToPage(${i})">${i}</button>`;
+        }
+        html += `<button onclick="goToPage(${totalPages})" ${currentPage === totalPages ? "disabled" : ""}>»</button>`;
+        paginationDiv.innerHTML = html;
+      }
+
+      function goToPage(page) {
+        currentPage = page;
+        loadStaff();
+      }
+
+      async function loadFilterOptions() {
+        try {
+          const response = await fetch("/api/facilities");
+          const facilities = await response.json();
+          const facilityFilter = document.getElementById("facilityFilter");
+          const facilitySelect = document.getElementById("facilitySelect");
+
+          if (facilityFilter && Array.isArray(facilities)) {
+            facilityFilter.innerHTML =
+              '<option value="all">All Facilities</option>';
+            facilities.forEach((f) => {
+              facilityFilter.innerHTML += `<option value="${f.name}">${f.name}</option>`;
+            });
+          }
+
+          if (facilitySelect && Array.isArray(facilities)) {
+            facilitySelect.innerHTML =
+              '<option value="">Select Facility</option>';
+            facilities.forEach((f) => {
+              facilitySelect.innerHTML += `<option value="${f.name}">${f.name}</option>`;
+            });
+          }
+        } catch (error) {
+          console.error("Error loading filter options:", error);
+        }
+      }
+
+      function openAddStaffModal() {
+        document.getElementById("addStaffModal").style.display = "flex";
+        document.getElementById("addStaffForm").reset();
+        loadFilterOptions();
+      }
+
+      function closeModal(modalId) {
+        document.getElementById(modalId).style.display = "none";
+      }
+
+      document
+        .getElementById("addStaffForm")
+        ?.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+
+          try {
+            const response = await fetch("/api/staff", {
+              method: "POST",
+              body: formData,
+            });
+            const result = await response.json();
+
+            if (result.success) {
+              showNotification(
+                "Staff member added successfully! ID: " + result.staff_id,
+              );
+              closeModal("addStaffModal");
+              e.target.reset();
+              loadStaff();
+            } else {
+              showNotification(
+                result.error || "Failed to add staff member",
+                "error",
+              );
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            showNotification("Failed to add staff member", "error");
+          }
+        });
+
+      async function deleteStaff(id) {
+        if (confirm("Are you sure you want to delete this staff member?")) {
+          try {
+            const response = await fetch(`/api/staff/${id}`, {
+              method: "DELETE",
+            });
+            const result = await response.json();
+            if (result.success) {
+              showNotification("Staff member deleted successfully");
+              loadStaff();
+            } else {
+              showNotification(result.error || "Failed to delete", "error");
+            }
+          } catch (error) {
+            showNotification("Failed to delete staff member", "error");
+          }
+        }
+      }
+
+      async function viewStaff(id) {
+        try {
+          const response = await fetch(`/api/staff/${id}`);
+          const staff = await response.json();
+          document.getElementById("viewStaffContent").innerHTML = `
+                    <div style="text-align: center;">
+                        ${staff.image_url ? `<img src="${staff.image_url}" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 15px;">` : '<div style="font-size: 80px; margin-bottom: 15px;">👤</div>'}
+                        <h3>${staff.name}</h3>
+                        <p><strong>Staff ID:</strong> ${staff.staff_id}</p>
+                        <hr>
+                        <p><strong>Role:</strong> ${staff.role}</p>
+                        <p><strong>Facility:</strong> ${staff.facility}</p>
+                        <p><strong>Education:</strong> ${staff.education}</p>
+                        <p><strong>Gender:</strong> ${staff.gender}</p>
+                        <p><strong>Age:</strong> ${staff.age}</p>
+                        <p><strong>Status:</strong> ${staff.employment_status}</p>
+                        <p><strong>Hire Date:</strong> ${formatDate(staff.hire_date)}</p>
+                    </div>
+                `;
+          document.getElementById("viewStaffModal").style.display = "flex";
+        } catch (error) {
+          showNotification("Failed to load staff details", "error");
+        }
+      }
+
+      async function editStaff(id) {
+        try {
+          const response = await fetch(`/api/staff/${id}`);
+          const staff = await response.json();
+
+          document.getElementById("editStaffId").value = staff.id;
+          document.getElementById("editName").value = staff.name;
+          document.getElementById("editRole").value = staff.role;
+          document.getElementById("editFacility").value = staff.facility;
+          document.getElementById("editStatus").value = staff.employment_status;
+
+          document.getElementById("editStaffModal").style.display = "flex";
+        } catch (error) {
+          showNotification("Failed to load staff data", "error");
+        }
+      }
+
+      document
+        .getElementById("editStaffForm")
+        ?.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const id = document.getElementById("editStaffId").value;
+          const data = {
+            name: document.getElementById("editName").value,
+            role: document.getElementById("editRole").value,
+            facility: document.getElementById("editFacility").value,
+            employment_status: document.getElementById("editStatus").value,
+          };
+
+          try {
+            const response = await fetch(`/api/staff/${id}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(data),
+            });
+            const result = await response.json();
+            if (result.success) {
+              showNotification("Staff member updated successfully");
+              closeModal("editStaffModal");
+              loadStaff();
+            } else {
+              showNotification(result.error || "Failed to update", "error");
+            }
+          } catch (error) {
+            showNotification("Failed to update staff member", "error");
+          }
+        });
+
+      // Event listeners for filters
+      document.getElementById("searchInput")?.addEventListener("input", () => {
+        currentPage = 1;
+        loadStaff();
+      });
+
+      document.getElementById("roleFilter")?.addEventListener("change", () => {
+        currentPage = 1;
+        loadStaff();
+      });
+
+      document
+        .getElementById("facilityFilter")
+        ?.addEventListener("change", () => {
+          currentPage = 1;
+          loadStaff();
+        });
+
+      document
+        .getElementById("statusFilter")
+        ?.addEventListener("change", () => {
+          currentPage = 1;
+          loadStaff();
+        });
+
+      async function handleLogout() {
+        await fetch("/api/logout", { method: "POST" });
+        window.location.href = "/index.html";
+      }
+
+      // Theme toggle
+      function toggleTheme() {
+        if (document.body.classList.contains("dark-mode")) {
+          document.body.classList.remove("dark-mode");
+          localStorage.setItem("theme", "light");
+          document.getElementById("themeToggle").textContent = "🌙";
+        } else {
+          document.body.classList.add("dark-mode");
+          localStorage.setItem("theme", "dark");
+          document.getElementById("themeToggle").textContent = "☀️";
+        }
+      }
+
+      // Initialize saved theme
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "dark") {
+        document.body.classList.add("dark-mode");
+        document.getElementById("themeToggle").textContent = "☀️";
+      }
+
+      // Check authentication and admin access
+      async function checkAuth() {
+        try {
+          const response = await fetch("/api/check-auth");
+          const result = await response.json();
+
+          if (!result.authenticated) {
+            window.location.href = "/index.html";
+            return;
+          }
+
+          const userRole = result.user?.role;
+          const userName = result.user?.username || "User";
+          document.getElementById("userName").textContent = userName;
+
+          // Check if user is admin - if not, show access denied
+          if (userRole !== "admin") {
+            const staffContent = document.getElementById("staffContent");
+            staffContent.innerHTML = `
+                        <div class="access-denied">
+                            <h2>⛔ Access Denied</h2>
+                            <p>You don't have permission to access the Staff Management page.</p>
+                            <p>This page is only available to Administrators.</p>
+                            <button class="btn-primary" onclick="window.location.href='/dashboard.html'">Return to Dashboard</button>
+                        </div>
+                    `;
+            return;
+          }
+
+          // Load staff data for admin
+          staffContent.innerHTML = `
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-title">Total Staff</div>
+                            <div class="stat-value" id="totalStaff">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-title">Active Instructors</div>
+                            <div class="stat-value" id="activeInstructors">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-title">On Leave</div>
+                            <div class="stat-value" id="onLeaveCount">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-title">Departments</div>
+                            <div class="stat-value" id="departmentCount">6</div>
+                        </div>
+                    </div>
+
+                    <div class="search-bar">
+                        <input type="text" id="searchInput" class="search-input" placeholder="Search Staff records...">
+                        <select id="roleFilter" class="filter-select">
+                            <option value="all">All Roles</option>
+                            <option value="Lead Instructor">Lead Instructor</option>
+                            <option value="Case Manager">Case Manager</option>
+                            <option value="Lead Counselor">Lead Counselor</option>
+                            <option value="Instructor">Instructor</option>
+                            <option value="Security Liaison">Security Liaison</option>
+                            <option value="Assistant Professor">Assistant Professor</option>
+                        </select>
+                        <select id="facilityFilter" class="filter-select">
+                            <option value="all">All Facilities</option>
+                        </select>
+                        <select id="statusFilter" class="filter-select">
+                            <option value="all">All Status</option>
+                            <option value="Active">Active</option>
+                            <option value="On leave">On Leave</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                        <button class="btn-primary" onclick="openAddStaffModal()">+ Add Staff</button>
+                    </div>
+
+                    <div class="data-table">
+                        <table>
+                            <thead>
+                                <tr><th>Name</th><th>Role</th><th>Assigned Facility</th><th>Status</th><th>Actions</th></tr>
+                            </thead>
+                            <tbody id="staffTable"><tr><td colspan="5" style="text-align: center;">Loading staff data...</td></tr></tbody>
+                        </table>
+                    </div>
+                    <div class="pagination" id="pagination"></div>
+                `;
+
+          // Re-attach event listeners
+          document
+            .getElementById("searchInput")
+            ?.addEventListener("input", () => {
+              currentPage = 1;
+              loadStaff();
+            });
+          document
+            .getElementById("roleFilter")
+            ?.addEventListener("change", () => {
+              currentPage = 1;
+              loadStaff();
+            });
+          document
+            .getElementById("facilityFilter")
+            ?.addEventListener("change", () => {
+              currentPage = 1;
+              loadStaff();
+            });
+          document
+            .getElementById("statusFilter")
+            ?.addEventListener("change", () => {
+              currentPage = 1;
+              loadStaff();
+            });
+
+          await loadFilterOptions();
+          await loadStaff();
+        } catch (error) {
+          console.error("Auth error:", error);
+          window.location.href = "/index.html";
+        }
+      }
+
+      // Make functions global
+      window.openAddStaffModal = openAddStaffModal;
+      window.closeModal = closeModal;
+      window.goToPage = goToPage;
+      window.viewStaff = viewStaff;
+      window.editStaff = editStaff;
+      window.deleteStaff = deleteStaff;
+      window.handleLogout = handleLogout;
+      window.toggleTheme = toggleTheme;
+
+      
+      checkAuth();
+    </script>
+    <script src="/js/mobile.js"></script>
+  </body>
+</html>

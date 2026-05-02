@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prisoner Profile - Rehab System</title>
+    <!-- Boxicons CSS -->
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <h2>🏛️ Rehab System</h2>
+          <p>Prisoner Education & Rehabilitation</p>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="/dashboard.html" class="nav-item"
+            ><i class="bx bxs-dashboard"></i> Dashboard</a
+          >
+          <a href="/prisoners.html" class="nav-item"
+            ><i class="bx bxs-group"></i> Prisoners</a
+          >
+          <a href="/gallery.html" class="nav-item"
+            ><i class="bx bxs-image"></i> Gallery</a
+          >
+          <a href="/programs.html" class="nav-item"
+            ><i class="bx bxs-book"></i> Programs</a
+          >
+          <a href="/enrollments.html" class="nav-item"
+            ><i class="bx bxs-graduation"></i> Enrollments</a
+          >
+          <a href="/sessions.html" class="nav-item"
+            ><i class="bx bxs-calendar"></i> Sessions</a
+          >
+          <a href="/staff.html" class="nav-item"
+            ><i class="bx bxs-user-badge"></i> Staff</a
+          >
+          <a href="/reports.html" class="nav-item"
+            ><i class="bx bxs-report"></i> Reports</a
+          >
+          <a href="/settings.html" class="nav-item"
+            ><i class="bx bxs-cog"></i> Settings</a
+          >
+        </nav>
+      </aside>
+
+      <div class="main-content">
+        <div class="top-bar">
+          <h1 class="page-title">Prisoner Profile</h1>
+          <div class="user-menu">
+            <span class="user-name" id="userName">User</span>
+            <button class="logout-btn" onclick="handleLogout()">Logout</button>
+          </div>
+        </div>
+
+        <div class="content-area">
+          <a
+            href="/prisoners.html"
+            class="return-link"
+            style="display: inline-block; margin-bottom: 20px"
+            >← Return to Prisoner List</a
+          >
+
+          <div id="profileContent">
+            <div class="spinner"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/theme.js"></script>
+    <script>
+      async function loadProfile() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get("id");
+        if (!id) {
+          window.location.href = "/prisoners.html";
+          return;
+        }
+
+        try {
+          const response = await fetch(`/api/prisoners/${id}`);
+          const data = await response.json();
+          const prisoner = data.prisoner;
+          const programs = data.programs || [];
+          const sessions = data.sessions || [];
+
+          const hasPhoto = prisoner.image_url && prisoner.image_url !== "";
+
+          document.getElementById("profileContent").innerHTML = `
+                    <div style="display: grid; grid-template-columns: 300px 1fr; gap: 30px;">
+                        <!-- Left Column - Photo & Basic Info -->
+                        <div class="profile-sidebar" style="background: var(--card-bg); border-radius: 12px; padding: 20px; text-align: center;">
+                            ${
+                              hasPhoto
+                                ? `<img src="${prisoner.image_url}" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; margin-bottom: 15px;">`
+                                : `<div style="width: 150px; height: 150px; background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px auto; font-size: 64px;">👤</div>`
+                            }
+                            <h2 class="profile-name" style="color: var(--text-color);">${prisoner.name || "N/A"}</h2>
+                            <p class="profile-id" style="color: var(--gray);">ID: ${prisoner.id_number || "N/A"}</p>
+                            <p class="profile-facility" style="color: var(--gray);">🏢 ${prisoner.prison_block || "N/A"}</p>
+                            <hr style="margin: 15px 0; border-color: var(--border-color);">
+                            <div style="text-align: left;">
+                                <p><strong>📅 Admission:</strong> ${formatDate(prisoner.admission_date)}</p>
+                                <p><strong>📏 Sentence:</strong> ${prisoner.sentence_length || "N/A"}</p>
+                                <p><strong>📊 Status:</strong> ${getStatusBadge(prisoner.enrollment_status)}</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Right Column - Details -->
+                        <div>
+                            <!-- Personal Information -->
+                            <div class="profile-section" style="background: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                                <h3 style="margin-bottom: 15px; color: var(--text-color);">📋 Personal Information</h3>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                    <div><strong>Gender:</strong> ${prisoner.gender || "N/A"}</div>
+                                    <div><strong>Age:</strong> ${prisoner.age || "N/A"} years</div>
+                                    <div><strong>Education:</strong> ${prisoner.education || "N/A"}</div>
+                                    <div><strong>Marital Status:</strong> ${prisoner.marital_status || "N/A"}</div>
+                                    <div><strong>Skills:</strong> ${prisoner.skills || "N/A"}</div>
+                                </div>
+                                ${prisoner.notes ? `<div style="margin-top: 15px;"><strong>Notes:</strong><br>${prisoner.notes}</div>` : ""}
+                            </div>
+                            
+                            <!-- Enrolled Programs -->
+                            <div class="profile-section" style="background: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                                <h3 style="margin-bottom: 15px; color: var(--text-color);">📚 Enrolled Programs</h3>
+                                ${
+                                  programs.length > 0
+                                    ? `
+                                    <table style="width: 100%; border-collapse: collapse;">
+                                        <thead>
+                                            <tr style="background: var(--bg-light);">
+                                                <th style="padding: 10px; text-align: left;">Program Name</th>
+                                                <th style="padding: 10px; text-align: left;">Enrolled</th>
+                                                <th style="padding: 10px; text-align: left;">Progress</th>
+                                                <th style="padding: 10px; text-align: left;">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${programs
+                                              .map(
+                                                (p) => `
+                                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                                    <td style="padding: 10px;">${p.name}</td>
+                                                    <td style="padding: 10px;">${formatDate(p.enrollment_date)}</td>
+                                                    <td style="padding: 10px;">
+                                                        <div style="width: 100px; height: 6px; background: var(--border-color); border-radius: 3px; overflow: hidden;">
+                                                            <div style="width: ${p.completion_percentage || 0}%; height: 100%; background: var(--primary-color);"></div>
+                                                        </div>
+                                                        <span style="font-size: 11px;">${p.completion_percentage || 0}%</span>
+                                                    </td>
+                                                    <td style="padding: 10px;">${getStatusBadge(p.status)}</td>
+                                                </tr>
+                                            `,
+                                              )
+                                              .join("")}
+                                        </tbody>
+                                    </table>
+                                `
+                                    : "<p>No programs enrolled</p>"
+                                }
+                            </div>
+                            
+                            <!-- Recent Sessions -->
+                            <div class="profile-section" style="background: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                                <h3 style="margin-bottom: 15px; color: var(--text-color);">📅 Recent Session History</h3>
+                                ${
+                                  sessions.length > 0
+                                    ? `
+                                    <table style="width: 100%; border-collapse: collapse;">
+                                        <thead>
+                                            <tr style="background: var(--bg-light);">
+                                                <th style="padding: 10px; text-align: left;">Session</th>
+                                                <th style="padding: 10px; text-align: left;">Date</th>
+                                                <th style="padding: 10px; text-align: left;">Duration</th>
+                                                <th style="padding: 10px; text-align: left;">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${sessions
+                                              .map(
+                                                (s) => `
+                                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                                    <td style="padding: 10px;">${s.title || "N/A"}</td>
+                                                    <td style="padding: 10px;">${formatDate(s.session_date)}</td>
+                                                    <td style="padding: 10px;">${s.duration || "N/A"}</td>
+                                                    <td style="padding: 10px;">${getStatusBadge(s.status)}</td>
+                                                </tr>
+                                            `,
+                                              )
+                                              .join("")}
+                                        </tbody>
+                                    </table>
+                                `
+                                    : "<p>No sessions recorded</p>"
+                                }
+                            </div>
+                            
+                            <!-- Rehabilitation Forecast -->
+                            <div class="forecast-card" style="background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); border-radius: 12px; padding: 20px; color: white;">
+                                <h4>🎯 Rehabilitation Forecast</h4>
+                                <p>Based on current enrollment and participation rates, ${prisoner.name} is projected to complete their primary track 3 months early.</p>
+                                <a href="#" style="color: white; text-decoration: underline;">View Full Analytics →</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+        } catch (error) {
+          console.error("Error loading profile:", error);
+          document.getElementById("profileContent").innerHTML =
+            '<p style="color: red;">Failed to load profile</p>';
+        }
+      }
+
+      function formatDate(dateString) {
+        if (!dateString) return "N/A";
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return "N/A";
+        return date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+      }
+
+      function getStatusBadge(status) {
+        const statusMap = {
+          Active: "status-active",
+          "In Progress": "status-active",
+          Enrolled: "status-active",
+          Completed: "status-completed",
+          "On Warning": "status-warning",
+          Inactive: "status-inactive",
+          Scheduled: "status-active",
+          Cancelled: "status-inactive",
+        };
+        const className = statusMap[status] || "status-active";
+        return `<span class="status-badge ${className}">${status || "N/A"}</span>`;
+      }
+
+      async function handleLogout() {
+        await fetch("/api/logout", { method: "POST" });
+        window.location.href = "/index.html";
+      }
+
+      async function checkAuth() {
+        try {
+          const response = await fetch("/api/check-auth");
+          const result = await response.json();
+          if (!result.authenticated) {
+            window.location.href = "/index.html";
+          } else {
+            document.getElementById("userName").textContent =
+              result.user?.username || "User";
+            loadProfile();
+          }
+        } catch (error) {
+          window.location.href = "/index.html";
+        }
+      }
+
+      checkAuth();
+    </script>
+    <script src="/js/mobile.js"></script>
+  </body>
+</html>

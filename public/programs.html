@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Programs - Rehab System</title>
+    <!-- Boxicons CSS -->
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <h2>🏛️ Rehab System</h2>
+          <p>Prisoner Education & Rehabilitation</p>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="/dashboard.html" class="nav-item"
+            ><i class="bx bxs-dashboard"></i> Dashboard</a
+          >
+          <a href="/prisoners.html" class="nav-item"
+            ><i class="bx bxs-group"></i> Prisoners</a
+          >
+          <a href="/gallery.html" class="nav-item"
+            ><i class="bx bxs-image"></i> Gallery</a
+          >
+          <a href="/programs.html" class="nav-item"
+            ><i class="bx bxs-book"></i> Programs</a
+          >
+          <a href="/enrollments.html" class="nav-item"
+            ><i class="bx bxs-graduation"></i> Enrollments</a
+          >
+          <a href="/sessions.html" class="nav-item"
+            ><i class="bx bxs-calendar"></i> Sessions</a
+          >
+          <a href="/staff.html" class="nav-item"
+            ><i class="bx bxs-user-badge"></i> Staff</a
+          >
+          <a href="/reports.html" class="nav-item"
+            ><i class="bx bxs-report"></i> Reports</a
+          >
+          <a href="/settings.html" class="nav-item"
+            ><i class="bx bxs-cog"></i> Settings</a
+          >
+        </nav>
+      </aside>
+
+      <div class="main-content">
+        <div class="top-bar">
+          <h1 class="page-title">Rehabilitation Programs</h1>
+          <div class="user-menu">
+            <span class="user-name" id="userName">User</span>
+            <button
+              id="themeToggle"
+              class="theme-toggle"
+              onclick="toggleTheme()"
+            >
+              🌙
+            </button>
+            <button class="logout-btn" onclick="handleLogout()">Logout</button>
+          </div>
+        </div>
+
+        <div class="content-area">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 20px;
+            "
+          >
+            <div class="search-bar" style="margin: 0">
+              <select id="typeFilter" class="filter-select">
+                <option value="all">All Programs</option>
+                <option value="Vocational">Vocational</option>
+                <option value="Educational">Educational</option>
+                <option value="Behavioral">Behavioral</option>
+              </select>
+              <select id="statusFilter" class="filter-select">
+                <option value="all">Status: Active</option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+            <button
+              class="btn-primary"
+              id="addProgramBtn"
+              onclick="openAddProgramModal()"
+              style="display: none"
+            >
+              + Add New Program
+            </button>
+          </div>
+
+          <div class="programs-grid" id="programsGrid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Program Modal -->
+    <div id="addProgramModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Add New Program</h3>
+          <span class="close-modal" onclick="closeModal('addProgramModal')"
+            >&times;</span
+          >
+        </div>
+        <form id="addProgramForm" enctype="multipart/form-data">
+          <div class="form-group">
+            <label>Program title</label>
+            <input type="text" name="program_title" required />
+          </div>
+          <div class="form-group">
+            <label>Program type</label>
+            <select name="program_type" required>
+              <option>Vocational</option>
+              <option>Educational</option>
+              <option>Behavioral</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Instructor</label>
+            <input type="text" name="instructor" required />
+          </div>
+          <div class="form-group">
+            <label>Duration</label>
+            <input
+              type="text"
+              name="duration"
+              placeholder="e.g., 6 months"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label>Prerequisite</label>
+            <textarea name="prerequisite" rows="2"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Program Description</label>
+            <textarea name="program_description" rows="3" required></textarea>
+          </div>
+          <div class="form-group">
+            <label>Upload Thumbnail</label>
+            <input type="file" name="thumbnail" accept="image/*" />
+          </div>
+          <button type="submit" class="btn-primary">ADD Program</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/programs.js"></script>
+    <script src="/js/theme.js"></script>
+    <script src="/js/role-nav.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        displayUserInfo();
+        initRoleBasedNavigation();
+      });
+    </script>
+    <script>
+      // Show/hide add button based on role
+      document.addEventListener("DOMContentLoaded", async function () {
+        await displayUserInfo();
+        await initRoleBasedNavigation();
+
+        // Check if user is admin to show add program button
+        const userRole = localStorage.getItem("userRole");
+        const addProgramBtn = document.getElementById("addProgramBtn");
+        if (addProgramBtn && userRole === "admin") {
+          addProgramBtn.style.display = "block";
+        }
+      });
+    </script>
+    <script src="/js/mobile.js"></script>
+  </body>
+</html>

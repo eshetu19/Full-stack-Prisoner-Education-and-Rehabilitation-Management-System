@@ -1,0 +1,871 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Prisoner Rehab System</title>
+
+    <!-- Boxicons CSS -->
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        border-radius: 8px;
+        z-index: 2000;
+        animation: slideIn 0.3s ease;
+      }
+      .notification.success {
+        background: #2ecc71;
+        color: white;
+      }
+      .notification.error {
+        background: #e74c3c;
+        color: white;
+      }
+      .notification.info {
+        background: #3498db;
+        color: white;
+      }
+      @keyframes slideIn {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      .password-strength {
+        height: 4px;
+        background: #e1e8ed;
+        margin-top: 5px;
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .password-strength-bar {
+        height: 100%;
+        width: 0%;
+        transition:
+          width 0.3s,
+          background 0.3s;
+      }
+      .password-strength-bar.weak {
+        background: #e74c3c;
+        width: 33%;
+      }
+      .password-strength-bar.medium {
+        background: #f39c12;
+        width: 66%;
+      }
+      .password-strength-bar.strong {
+        background: #2ecc71;
+        width: 100%;
+      }
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+      }
+      .modal-content {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        max-width: 450px;
+        width: 90%;
+      }
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #f0f0f0;
+      }
+      .close-modal {
+        font-size: 24px;
+        cursor: pointer;
+        color: #999;
+      }
+      .close-modal:hover {
+        color: #e74c3c;
+      }
+      .form-group {
+        margin-bottom: 20px;
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+      }
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #e1e8ed;
+        border-radius: 8px;
+      }
+      .btn-primary {
+        background: var(--primary-color);
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      .btn-secondary {
+        background: var(--gray);
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <h2>🏛️ Rehab System</h2>
+          <p>Prisoner Education & Rehabilitation</p>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="/dashboard.html" class="nav-item"
+            ><i class="bx bxs-dashboard"></i> Dashboard</a
+          >
+          <a href="/prisoners.html" class="nav-item"
+            ><i class="bx bxs-group"></i> Prisoners</a
+          >
+          <a href="/gallery.html" class="nav-item"
+            ><i class="bx bxs-image"></i> Gallery</a
+          >
+          <a href="/programs.html" class="nav-item"
+            ><i class="bx bxs-book"></i> Programs</a
+          >
+          <a href="/enrollments.html" class="nav-item"
+            ><i class="bx bxs-graduation"></i> Enrollments</a
+          >
+          <a href="/sessions.html" class="nav-item"
+            ><i class="bx bxs-calendar"></i> Sessions</a
+          >
+          <a href="/staff.html" class="nav-item"
+            ><i class="bx bxs-user-badge"></i> Staff</a
+          >
+          <a href="/reports.html" class="nav-item"
+            ><i class="bx bxs-report"></i> Reports</a
+          >
+          <a href="/settings.html" class="nav-item"
+            ><i class="bx bxs-cog"></i> Settings</a
+          >
+        </nav>
+      </aside>
+
+      <div class="main-content">
+        <div class="top-bar">
+          <h1 class="page-title">Institutional Overview</h1>
+          <div class="user-menu">
+            <span class="user-name" id="userName">User</span>
+            <button
+              id="themeToggle"
+              class="theme-toggle"
+              onclick="toggleTheme()"
+            >
+              🌙
+            </button>
+            <button
+              class="logout-btn"
+              onclick="openPasswordModal()"
+              style="
+                background: none;
+                border: none;
+                color: var(--primary-color);
+                cursor: pointer;
+                margin-right: 15px;
+              "
+            >
+              🔐 Change Password
+            </button>
+
+            <button class="logout-btn" onclick="handleLogout()">Logout</button>
+          </div>
+        </div>
+
+        <div class="content-area">
+          <p style="color: var(--gray); margin-bottom: 20px">
+            System Status and rehabilitation metrics for April 2026
+          </p>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-title">Total Prisoners</div>
+              <div class="stat-value" id="totalPrisoners">0</div>
+              <div class="stat-change positive" id="totalPrisonersChange">
+                Loading...
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-title">Active Programs</div>
+              <div class="stat-value" id="activePrograms">0</div>
+              <div class="stat-change positive">All systems operational</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-title">Current Enrollments</div>
+              <div class="stat-value" id="currentEnrollments">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-title">Sessions this month</div>
+              <div class="stat-value" id="sessionsThisMonth">0</div>
+              <div class="stat-change" id="sessionsPending">Loading...</div>
+            </div>
+          </div>
+
+          <!-- Mini Charts Section -->
+          <div class="charts-row">
+            <div class="chart-mini-card">
+              <div class="chart-title">
+                <span>📈 Enrollment Trends</span>
+                <span class="trend-up" id="trendIndicator">↑ +12%</span>
+              </div>
+              <div class="chart-value" id="totalEnrollmentsChart">0</div>
+              <div class="simple-line-chart" id="enrollmentTrendChart">
+                <!-- Bars will be added dynamically -->
+              </div>
+            </div>
+
+            <div class="chart-mini-card">
+              <div class="chart-title">
+                <span>📊 Program Completion Rates</span>
+                <span>Last 6 months</span>
+              </div>
+              <div class="chart-bars" id="completionRatesChart">
+                <!-- Bars will be added dynamically -->
+              </div>
+            </div>
+
+            <div class="chart-mini-card">
+              <div class="chart-title">
+                <span>🎯 Program Distribution</span>
+                <span>By category</span>
+              </div>
+              <div class="chart-bars" id="programDistributionChart">
+                <!-- Distribution bars -->
+              </div>
+            </div>
+          </div>
+
+          <div class="data-table">
+            <h3 style="margin-bottom: 20px">Recent Activity</h3>
+            <table style="width: 100%; border-collapse: collapse">
+              <thead>
+                <tr style="background: #f8f9fa">
+                  <th style="padding: 12px; text-align: left">Prisoner Name</th>
+                  <th style="padding: 12px; text-align: left">Program</th>
+                  <th style="padding: 12px; text-align: left">Date</th>
+                  <th style="padding: 12px; text-align: left">Status</th>
+                </tr>
+              </thead>
+              <tbody id="recentActivity">
+                <tr>
+                  <td colspan="4" style="padding: 20px; text-align: center">
+                    Loading...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div
+            style="
+              margin-top: 30px;
+              padding: 20px;
+              background: #fff3cd;
+              border-radius: 8px;
+            "
+          >
+            <h4>⚠️ Documentation Required</h4>
+            <p>
+              3 program completions from the carpentry track are missing final
+              certifications
+            </p>
+          </div>
+
+          <div
+            style="
+              margin-top: 20px;
+              padding: 20px;
+              background: #d1ecf1;
+              border-radius: 8px;
+            "
+          >
+            <h4>🔧 System Maintenance</h4>
+            <p>
+              The system will be offline on Sunday April 19 due to ongoing
+              system maintenance
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>🔐 Change Password</h3>
+          <span class="close-modal" onclick="closePasswordModal()"
+            >&times;</span
+          >
+        </div>
+        <form id="changePasswordForm">
+          <div class="form-group">
+            <label>Current Password</label>
+            <input
+              type="password"
+              id="currentPassword"
+              required
+              placeholder="Enter your current password"
+            />
+          </div>
+          <div class="form-group">
+            <label>New Password</label>
+            <input
+              type="password"
+              id="newPassword"
+              required
+              placeholder="Enter new password (min 6 characters)"
+            />
+            <div class="password-strength">
+              <div class="password-strength-bar"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Confirm New Password</label>
+            <input
+              type="password"
+              id="confirmPassword"
+              required
+              placeholder="Confirm new password"
+            />
+          </div>
+          <div
+            id="passwordError"
+            style="
+              color: red;
+              font-size: 12px;
+              margin-bottom: 10px;
+              display: none;
+            "
+          ></div>
+          <div
+            id="passwordSuccess"
+            style="
+              color: green;
+              font-size: 12px;
+              margin-bottom: 10px;
+              display: none;
+            "
+          ></div>
+          <div style="display: flex; gap: 10px; justify-content: flex-end">
+            <button
+              type="button"
+              class="btn-secondary"
+              onclick="closePasswordModal()"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="btn-primary">Change Password</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      // Utility Functions
+      function showNotification(message, type = "success") {
+        const notification = document.createElement("div");
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+      }
+
+      function getStatusBadge(status) {
+        if (!status) return '<span class="status-badge">N/A</span>';
+        const statusMap = {
+          Active: "status-active",
+          "In Progress": "status-active",
+          Enrolled: "status-active",
+          Completed: "status-completed",
+          "On Warning": "status-warning",
+          Inactive: "status-inactive",
+          Scheduled: "status-active",
+          Cancelled: "status-inactive",
+        };
+        const className = statusMap[status] || "status-active";
+        return `<span class="status-badge ${className}">${status}</span>`;
+      }
+
+      function formatDisplayDate(dateValue) {
+        if (!dateValue) return "No date";
+
+        try {
+          const date = new Date(dateValue);
+          if (isNaN(date.getTime())) return "No date";
+
+          return date.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          });
+        } catch (e) {
+          return "No date";
+        }
+      }
+
+      // Load Dashboard Data
+      async function loadDashboard() {
+        try {
+          // Load stats
+          const statsResponse = await fetch("/api/dashboard/stats");
+          const stats = await statsResponse.json();
+
+          document.getElementById("totalPrisoners").textContent =
+            stats.totalPrisoners || 0;
+          document.getElementById("activePrograms").textContent =
+            stats.activePrograms || 0;
+          document.getElementById("currentEnrollments").textContent =
+            stats.currentEnrollments || 0;
+          document.getElementById("sessionsThisMonth").textContent =
+            stats.sessionsThisMonth || 0;
+
+          document.getElementById("totalPrisonersChange").innerHTML =
+            stats.totalPrisoners > 0 ? "+2.4% from last month" : "No data yet";
+          document.getElementById("sessionsPending").innerHTML =
+            stats.sessionsThisMonth > 0
+              ? "12 pending review"
+              : "No sessions this month";
+
+          // Load recent activities
+          await loadRecentActivities();
+
+          // Load mini charts
+          await loadMiniCharts();
+        } catch (error) {
+          console.error("Error loading dashboard:", error);
+          showNotification("Failed to load dashboard data", "error");
+        }
+      }
+      
+      async function loadMiniCharts() {
+        try {
+          // Get enrollment data
+          const enrollmentsResponse = await fetch("/api/enrollments?limit=100");
+          const enrollmentsData = await enrollmentsResponse.json();
+          const enrollments = enrollmentsData.enrollments || [];
+
+          // Get programs data
+          const programsResponse = await fetch("/api/programs");
+          const programs = await programsResponse.json();
+
+          // Display total enrollments
+          document.getElementById("totalEnrollmentsChart").textContent =
+            enrollments.length;
+
+          // 1. Enrollment Trend Chart (last 6 months)
+          const last6Months = getLast6Months();
+          const monthlyEnrollments = calculateMonthlyEnrollments(
+            enrollments,
+            last6Months,
+          );
+
+          const maxEnrollment = Math.max(
+            ...monthlyEnrollments.map((m) => m.count),
+            1,
+          );
+          const trendChart = document.getElementById("enrollmentTrendChart");
+          trendChart.innerHTML = monthlyEnrollments
+            .map(
+              (month) => `
+            <div style="flex: 1; text-align: center;">
+                <div class="line-bar" style="height: ${(month.count / maxEnrollment) * 80}px;"></div>
+                <div class="line-bar-label">${month.month}</div>
+            </div>
+        `,
+            )
+            .join("");
+
+          // Calculate trend percentage
+          const lastMonth =
+            monthlyEnrollments[monthlyEnrollments.length - 1]?.count || 0;
+          const prevMonth =
+            monthlyEnrollments[monthlyEnrollments.length - 2]?.count || 0;
+          const trendPercent =
+            prevMonth > 0
+              ? (((lastMonth - prevMonth) / prevMonth) * 100).toFixed(1)
+              : 0;
+          const trendElement = document.getElementById("trendIndicator");
+          trendElement.innerHTML = `${trendPercent >= 0 ? "↑" : "↓"} +${Math.abs(trendPercent)}%`;
+          trendElement.className =
+            trendPercent >= 0 ? "trend-up" : "trend-down";
+
+          // 2. Program Completion Rates Chart
+          const programCompletions = [];
+          for (const program of programs.slice(0, 5)) {
+            const statsResponse = await fetch(
+              `/api/programs/${program.id}/stats`,
+            );
+            const stats = await statsResponse.json();
+            programCompletions.push({
+              name: program.name.substring(0, 15),
+              rate: Math.round(stats.avg_completion || 0),
+              enrolled: stats.enrolled_count || 0,
+            });
+          }
+
+          const completionChart = document.getElementById(
+            "completionRatesChart",
+          );
+          completionChart.innerHTML = programCompletions
+            .map(
+              (prog) => `
+            <div class="chart-bar-item">
+                <div class="chart-bar-label">
+                    <span>${prog.name}</span>
+                    <span>${prog.rate}% (${prog.enrolled})</span>
+                </div>
+                <div class="chart-bar-bg">
+                    <div class="chart-bar-fill" style="width: ${prog.rate}%"></div>
+                </div>
+            </div>
+        `,
+            )
+            .join("");
+
+          // 3. Program Distribution by Category
+          const categoryCount = {
+            Vocational: 0,
+            Educational: 0,
+            Behavioral: 0,
+          };
+
+          programs.forEach((program) => {
+            if (categoryCount[program.program_type] !== undefined) {
+              categoryCount[program.program_type]++;
+            }
+          });
+
+          const total = programs.length;
+          const distributionChart = document.getElementById(
+            "programDistributionChart",
+          );
+          distributionChart.innerHTML = Object.entries(categoryCount)
+            .map(
+              ([category, count]) => `
+            <div class="chart-bar-item">
+                <div class="chart-bar-label">
+                    <span>${category}</span>
+                    <span>${count} programs (${total > 0 ? Math.round((count / total) * 100) : 0}%)</span>
+                </div>
+                <div class="chart-bar-bg">
+                    <div class="chart-bar-fill" style="width: ${total > 0 ? (count / total) * 100 : 0}%"></div>
+                </div>
+            </div>
+        `,
+            )
+            .join("");
+        } catch (error) {
+          console.error("Error loading charts:", error);
+        }
+      }
+
+      function getLast6Months() {
+        const months = [];
+        const monthNames = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ];
+        const today = new Date();
+
+        for (let i = 5; i >= 0; i--) {
+          const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+          months.push({
+            month: monthNames[date.getMonth()],
+            year: date.getFullYear(),
+            index: i,
+          });
+        }
+        return months;
+      }
+
+      function calculateMonthlyEnrollments(enrollments, months) {
+        return months.map((month) => {
+          const count = enrollments.filter((e) => {
+            const enrollmentDate = new Date(e.enrollment_date);
+            return (
+              enrollmentDate.getMonth() ===
+                months.findIndex((m) => m.month === month.month) &&
+              enrollmentDate.getFullYear() === month.year
+            );
+          }).length;
+          return { month: month.month, count };
+        });
+      }
+      // Load Recent Activities with proper date handling
+      async function loadRecentActivities() {
+        try {
+          const response = await fetch("/api/dashboard/recent-activity");
+          const activities = await response.json();
+
+          const tbody = document.getElementById("recentActivity");
+
+          if (activities && activities.length > 0) {
+            tbody.innerHTML = activities
+              .map((activity) => {
+                // Get the best available date
+                let displayDate = "No date";
+
+                // Try multiple possible date fields
+                const dateValue =
+                  activity.formatted_date ||
+                  activity.activity_date ||
+                  activity.date;
+
+                if (dateValue && dateValue !== "No date") {
+                  displayDate = formatDisplayDate(dateValue);
+                }
+
+                // If still no date, try to get from activity_date directly
+                if (displayDate === "No date" && activity.activity_date) {
+                  displayDate = formatDisplayDate(activity.activity_date);
+                }
+
+                const programName =
+                  activity.program_name || activity.activity_type || "Activity";
+                const prisonerName = activity.prisoner_name || "Unknown";
+                const status = activity.status || "In Progress";
+
+                return `
+                            <tr style="border-bottom: 1px solid #eee;">
+                                <td style="padding: 12px;">${prisonerName}</td>
+                                <td style="padding: 12px;">${programName}</td>
+                                <td style="padding: 12px;">${displayDate}</td>
+                                <td style="padding: 12px;">${getStatusBadge(status)}</td>
+                            </tr>
+                        `;
+              })
+              .join("");
+          } else {
+            tbody.innerHTML =
+              '<tr><td colspan="4" style="padding: 20px; text-align: center;">No recent activity found</td></tr>';
+          }
+        } catch (error) {
+          console.error("Error loading recent activities:", error);
+          const tbody = document.getElementById("recentActivity");
+          if (tbody) {
+            tbody.innerHTML =
+              '<tr><td colspan="4" style="padding: 20px; text-align: center; color: red;">Error loading activity</td></tr>';
+          }
+        }
+      }
+
+      // Password Change Functions
+      function openPasswordModal() {
+        const modal = document.getElementById("changePasswordModal");
+        if (modal) {
+          modal.style.display = "flex";
+          const form = document.getElementById("changePasswordForm");
+          if (form) form.reset();
+          document.getElementById("passwordError").style.display = "none";
+          document.getElementById("passwordSuccess").style.display = "none";
+          const bar = document.querySelector(
+            "#changePasswordModal .password-strength-bar",
+          );
+          if (bar) {
+            bar.className = "password-strength-bar";
+          }
+        }
+      }
+
+      function closePasswordModal() {
+        const modal = document.getElementById("changePasswordModal");
+        if (modal) {
+          modal.style.display = "none";
+        }
+      }
+
+      function checkPasswordStrength(password) {
+        let strength = 0;
+        if (password.length >= 6) strength++;
+        if (password.length >= 10) strength++;
+        if (/[A-Z]/.test(password)) strength++;
+        if (/[0-9]/.test(password)) strength++;
+        if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+        if (strength <= 2) return "weak";
+        if (strength <= 4) return "medium";
+        return "strong";
+      }
+
+      // Password form event listeners
+      document.addEventListener("DOMContentLoaded", function () {
+        const newPasswordInput = document.getElementById("newPassword");
+        if (newPasswordInput) {
+          newPasswordInput.addEventListener("input", function (e) {
+            const strength = checkPasswordStrength(e.target.value);
+            const bar = document.querySelector(
+              "#changePasswordModal .password-strength-bar",
+            );
+            if (bar) {
+              bar.className = `password-strength-bar ${strength}`;
+            }
+          });
+        }
+
+        const form = document.getElementById("changePasswordForm");
+        if (form) {
+          form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const currentPassword =
+              document.getElementById("currentPassword").value;
+            const newPassword = document.getElementById("newPassword").value;
+            const confirmPassword =
+              document.getElementById("confirmPassword").value;
+
+            if (newPassword.length < 6) {
+              showNotification(
+                "New password must be at least 6 characters",
+                "error",
+              );
+              return;
+            }
+
+            if (newPassword !== confirmPassword) {
+              showNotification("New passwords do not match", "error");
+              return;
+            }
+
+            if (currentPassword === newPassword) {
+              showNotification(
+                "New password must be different from current password",
+                "error",
+              );
+              return;
+            }
+
+            try {
+              const response = await fetch("/api/change-password", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ currentPassword, newPassword }),
+              });
+
+              const result = await response.json();
+
+              if (result.success) {
+                showNotification(
+                  "Password changed successfully! Redirecting to login...",
+                  "success",
+                );
+                setTimeout(() => {
+                  fetch("/api/logout", { method: "POST" }).then(() => {
+                    window.location.href = "/index.html";
+                  });
+                }, 2000);
+              } else {
+                showNotification(
+                  result.error || "Failed to change password",
+                  "error",
+                );
+              }
+            } catch (error) {
+              console.error("Error:", error);
+              showNotification("An error occurred. Please try again.", "error");
+            }
+          });
+        }
+      });
+
+      // Close modal when clicking outside
+      window.onclick = function (event) {
+        const modal = document.getElementById("changePasswordModal");
+        if (event.target === modal) {
+          closePasswordModal();
+        }
+      };
+
+      // Logout function
+      async function handleLogout() {
+        try {
+          await fetch("/api/logout", { method: "POST" });
+          window.location.href = "/index.html";
+        } catch (error) {
+          showNotification("Logout failed", "error");
+        }
+      }
+
+      // Check authentication
+      async function checkAuth() {
+        try {
+          const response = await fetch("/api/check-auth");
+          const result = await response.json();
+
+          if (!result.authenticated) {
+            window.location.href = "/index.html";
+          } else {
+            const userNameSpan = document.getElementById("userName");
+            if (userNameSpan) {
+              userNameSpan.textContent = result.user?.username || "User";
+            }
+            loadDashboard();
+          }
+        } catch (error) {
+          console.error("Auth error:", error);
+          window.location.href = "/index.html";
+        }
+      }
+
+      // Make functions global
+      window.openPasswordModal = openPasswordModal;
+      window.closePasswordModal = closePasswordModal;
+      window.handleLogout = handleLogout;
+
+      // Initialize
+      checkAuth();
+    </script>
+    <script src="/js/theme.js"></script>
+    <script src="/js/role-nav.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        displayUserInfo();
+        initRoleBasedNavigation();
+      });
+    </script>
+    <script src="/js/mobile.js"></script>
+  </body>
+</html>

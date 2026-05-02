@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enrollments - Rehab System</title>
+    <!-- Boxicons CSS -->
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      .enrollment-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+      .enrollment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #f0f0f0;
+      }
+      .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: #e1e8ed;
+        border-radius: 4px;
+        overflow: hidden;
+        margin: 10px 0;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        transition: width 0.3s ease;
+      }
+      .filter-bar {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+      }
+      .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+      }
+      .status-active,
+      .status-enrolled,
+      .status-In-Progress {
+        background: #d4edda;
+        color: #155724;
+      }
+      .status-completed {
+        background: #d1ecf1;
+        color: #0c5460;
+      }
+      .status-warning,
+      .status-On-Warning {
+        background: #fff3cd;
+        color: #856404;
+      }
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        border-radius: 8px;
+        z-index: 2000;
+        animation: slideIn 0.3s ease;
+      }
+      .notification.success {
+        background: #2ecc71;
+        color: white;
+      }
+      .notification.error {
+        background: #e74c3c;
+        color: white;
+      }
+      .notification.info {
+        background: #3498db;
+        color: white;
+      }
+      @keyframes slideIn {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <h2>🏛️ Rehab System</h2>
+          <p>Prisoner Education & Rehabilitation</p>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="/dashboard.html" class="nav-item"
+            ><i class="bx bxs-dashboard"></i> Dashboard</a
+          >
+          <a href="/prisoners.html" class="nav-item"
+            ><i class="bx bxs-group"></i> Prisoners</a
+          >
+          <a href="/gallery.html" class="nav-item"
+            ><i class="bx bxs-image"></i> Gallery</a
+          >
+          <a href="/programs.html" class="nav-item"
+            ><i class="bx bxs-book"></i> Programs</a
+          >
+          <a href="/enrollments.html" class="nav-item"
+            ><i class="bx bxs-graduation"></i> Enrollments</a
+          >
+          <a href="/sessions.html" class="nav-item"
+            ><i class="bx bxs-calendar"></i> Sessions</a
+          >
+          <a href="/staff.html" class="nav-item"
+            ><i class="bx bxs-user-badge"></i> Staff</a
+          >
+          <a href="/reports.html" class="nav-item"
+            ><i class="bx bxs-report"></i> Reports</a
+          >
+          <a href="/settings.html" class="nav-item"
+            ><i class="bx bxs-cog"></i> Settings</a
+          >
+        </nav>
+      </aside>
+
+      <div class="main-content">
+        <div class="top-bar">
+          <h1 class="page-title">Program Enrollments</h1>
+          <div class="user-menu">
+            <span class="user-name" id="userName">User</span>
+            <button
+              id="themeToggle"
+              class="theme-toggle"
+              onclick="toggleTheme()"
+            >
+              🌙
+            </button>
+            <button class="logout-btn" onclick="handleLogout()">Logout</button>
+          </div>
+        </div>
+
+        <div class="content-area">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-title">Total Enrollments</div>
+              <div class="stat-value" id="totalEnrollments">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-title">Active Enrollments</div>
+              <div class="stat-value" id="activeEnrollments">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-title">Completed</div>
+              <div class="stat-value" id="completedEnrollments">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-title">Avg. Completion Rate</div>
+              <div class="stat-value" id="avgCompletion">0%</div>
+            </div>
+          </div>
+
+          <div class="filter-bar">
+            <input
+              type="text"
+              id="searchInput"
+              class="search-input"
+              placeholder="Search by prisoner or program"
+            />
+            <select id="statusFilter" class="filter-select">
+              <option value="all">All Status</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+              <option value="On Warning">On Warning</option>
+            </select>
+            <button class="btn-primary" onclick="openNewEnrollmentModal()">
+              + New Enrollment
+            </button>
+          </div>
+
+          <div id="enrollmentsList">
+            <div class="spinner"></div>
+          </div>
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- New Enrollment Modal -->
+    <div id="enrollmentModal" class="modal">
+      <div class="modal-content" style="max-width: 500px">
+        <div class="modal-header">
+          <h3>New Program Enrollment</h3>
+          <span class="close-modal" onclick="closeModal('enrollmentModal')"
+            >&times;</span
+          >
+        </div>
+        <form id="enrollmentForm">
+          <div class="form-group">
+            <label>Select Prisoner *</label>
+            <select id="prisonerSelect" required>
+              <option value="">-- Select Prisoner --</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Select Program *</label>
+            <select id="programSelect" required>
+              <option value="">-- Select Program --</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Enrollment Date *</label>
+            <input type="date" id="enrollmentDate" required />
+          </div>
+          <div
+            style="
+              display: flex;
+              gap: 10px;
+              justify-content: flex-end;
+              margin-top: 20px;
+            "
+          >
+            <button
+              type="button"
+              class="btn-secondary"
+              onclick="closeModal('enrollmentModal')"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="btn-primary">Enroll Prisoner</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Update Progress Modal -->
+    <div id="progressModal" class="modal">
+      <div class="modal-content" style="max-width: 400px">
+        <div class="modal-header">
+          <h3>Update Progress</h3>
+          <span class="close-modal" onclick="closeModal('progressModal')"
+            >&times;</span
+          >
+        </div>
+        <form id="progressForm">
+          <input type="hidden" id="enrollmentId" />
+          <div class="form-group">
+            <label
+              >Completion Percentage: <span id="percentValue">0</span>%</label
+            >
+            <input
+              type="range"
+              id="completionPercent"
+              min="0"
+              max="100"
+              value="0"
+              style="width: 100%"
+            />
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="enrollmentStatus">
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+              <option value="On Warning">On Warning</option>
+              <option value="Dropped">Dropped</option>
+            </select>
+          </div>
+          <div style="display: flex; gap: 10px; justify-content: flex-end">
+            <button
+              type="button"
+              class="btn-secondary"
+              onclick="closeModal('progressModal')"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="btn-primary">Update Progress</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="/js/theme.js"></script>
+    <script src="/js/role-nav.js"></script>
+    <script>
+      // Utility Functions
+      function showNotification(message, type = "success") {
+        const notification = document.createElement("div");
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+      }
+
+      function formatDate(dateString) {
+        if (!dateString) return "N/A";
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return "N/A";
+        return date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+      }
+
+      function getStatusBadge(status) {
+        const statusMap = {
+          Active: "status-active",
+          "In Progress": "status-active",
+          Enrolled: "status-active",
+          Completed: "status-completed",
+          "On Warning": "status-warning",
+          Inactive: "status-inactive",
+          Scheduled: "status-active",
+          Cancelled: "status-inactive",
+        };
+        const className = statusMap[status] || "status-active";
+        return `<span class="status-badge ${className}">${status}</span>`;
+      }
+
+      let currentPage = 1;
+      let totalPages = 1;
+
+      // Load Enrollments
+      async function loadEnrollments() {
+        try {
+          const search = document.getElementById("searchInput")?.value || "";
+          const status =
+            document.getElementById("statusFilter")?.value || "all";
+          const response = await fetch(
+            `/api/enrollments?page=${currentPage}&limit=10&status=${status}&search=${encodeURIComponent(search)}`,
+          );
+          const data = await response.json();
+
+          // Update stats cards
+          document.getElementById("totalEnrollments").textContent =
+            data.stats?.totalEnrollments || 0;
+          document.getElementById("activeEnrollments").textContent =
+            data.stats?.activeEnrollments || 0;
+          document.getElementById("completedEnrollments").textContent =
+            data.stats?.completedEnrollments || 0;
+          document.getElementById("avgCompletion").textContent =
+            (data.stats?.avgCompletion || 0) + "%";
+
+          const container = document.getElementById("enrollmentsList");
+          if (data.enrollments && data.enrollments.length > 0) {
+            container.innerHTML = data.enrollments
+              .map(
+                (enrollment) => `
+                        <div class="enrollment-card">
+                            <div class="enrollment-header">
+                                <div>
+                                    <strong style="font-size: 18px;">${enrollment.prisoner_name || "Unknown"}</strong>
+                                    <p style="color: #666; margin-top: 5px;">${enrollment.program_name || "Unknown Program"}</p>
+                                </div>
+                                ${getStatusBadge(enrollment.status)}
+                            </div>
+                            <div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span>Progress</span>
+                                    <span>${enrollment.completion_percentage || 0}%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${enrollment.completion_percentage || 0}%"></div>
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-top: 15px;">
+                                <div>
+                                    <small>Enrolled: ${formatDate(enrollment.enrollment_date)}</small>
+                                    <br>
+                                    <small>ID: ${enrollment.id_number || "N/A"}</small>
+                                </div>
+                                <div class="action-icons">
+                                    <button class="edit-btn" onclick="updateProgress(${enrollment.id}, ${enrollment.completion_percentage || 0}, '${enrollment.status}')">📊 Update Progress</button>
+                                    <button class="delete-btn" onclick="deleteEnrollment(${enrollment.id})">🗑️ Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                    `,
+              )
+              .join("");
+          } else {
+            container.innerHTML =
+              '<div style="text-align: center; padding: 40px; color: gray;">No enrollments found. Click "+ New Enrollment" to get started.</div>';
+          }
+
+          totalPages = data.totalPages || 1;
+          updatePagination();
+        } catch (error) {
+          console.error("Error loading enrollments:", error);
+          document.getElementById("enrollmentsList").innerHTML =
+            '<div style="text-align: center; padding: 40px; color: red;">Error loading enrollments</div>';
+          showNotification("Failed to load enrollments", "error");
+        }
+      }
+
+      function updatePagination() {
+        const paginationDiv = document.getElementById("pagination");
+        if (totalPages <= 1) {
+          paginationDiv.innerHTML = "";
+          return;
+        }
+        let html = "";
+        for (let i = 1; i <= Math.min(totalPages, 5); i++) {
+          html += `<button class="${i === currentPage ? "active" : ""}" onclick="goToPage(${i})">${i}</button>`;
+        }
+        paginationDiv.innerHTML = html;
+      }
+
+      function goToPage(page) {
+        currentPage = page;
+        loadEnrollments();
+      }
+
+      async function openNewEnrollmentModal() {
+        try {
+          const prisonersResponse = await fetch("/api/prisoners?limit=1000");
+          const prisonersData = await prisonersResponse.json();
+          const prisonerSelect = document.getElementById("prisonerSelect");
+          prisonerSelect.innerHTML =
+            '<option value="">-- Select Prisoner --</option>' +
+            (prisonersData.prisoners || [])
+              .filter((p) => p.enrollment_status !== "Completed")
+              .map(
+                (p) =>
+                  `<option value="${p.id}">${p.name} (${p.id_number}) - ${p.prison_block}</option>`,
+              )
+              .join("");
+
+          const programsResponse = await fetch("/api/programs?status=Active");
+          const programs = await programsResponse.json();
+          const programSelect = document.getElementById("programSelect");
+          programSelect.innerHTML =
+            '<option value="">-- Select Program --</option>' +
+            programs
+              .map(
+                (p) =>
+                  `<option value="${p.id}">${p.name} - ${p.program_type} (${p.max_capacity || 50} capacity)</option>`,
+              )
+              .join("");
+
+          document.getElementById("enrollmentDate").valueAsDate = new Date();
+          document.getElementById("enrollmentModal").style.display = "flex";
+        } catch (error) {
+          console.error("Error loading modal data:", error);
+          showNotification("Failed to load data for enrollment", "error");
+        }
+      }
+
+      document
+        .getElementById("enrollmentForm")
+        ?.addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const prisonerId = document.getElementById("prisonerSelect").value;
+          const programId = document.getElementById("programSelect").value;
+          const enrollmentDate =
+            document.getElementById("enrollmentDate").value;
+
+          if (!prisonerId || !programId || !enrollmentDate) {
+            showNotification("Please fill all fields", "error");
+            return;
+          }
+
+          const data = {
+            prisoner_id: parseInt(prisonerId),
+            program_id: parseInt(programId),
+            enrollment_date: enrollmentDate,
+          };
+
+          try {
+            const response = await fetch("/api/enrollments", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(data),
+            });
+            const result = await response.json();
+
+            if (result.success) {
+              showNotification("Enrollment created successfully!");
+              closeModal("enrollmentModal");
+              document.getElementById("enrollmentForm").reset();
+              loadEnrollments();
+            } else {
+              showNotification(
+                result.error || "Failed to create enrollment",
+                "error",
+              );
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            showNotification("Failed to create enrollment", "error");
+          }
+        });
+
+      function updateProgress(id, currentPercent, currentStatus) {
+        document.getElementById("enrollmentId").value = id;
+        document.getElementById("completionPercent").value = currentPercent;
+        document.getElementById("percentValue").textContent = currentPercent;
+        document.getElementById("enrollmentStatus").value = currentStatus;
+        document.getElementById("progressModal").style.display = "flex";
+      }
+
+      document
+        .getElementById("completionPercent")
+        ?.addEventListener("input", (e) => {
+          document.getElementById("percentValue").textContent = e.target.value;
+        });
+
+      document
+        .getElementById("progressForm")
+        ?.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const id = document.getElementById("enrollmentId").value;
+          const data = {
+            completion_percentage: parseInt(
+              document.getElementById("completionPercent").value,
+            ),
+            status: document.getElementById("enrollmentStatus").value,
+          };
+
+          try {
+            const response = await fetch(`/api/enrollments/${id}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(data),
+            });
+            const result = await response.json();
+
+            if (result.success) {
+              showNotification("Progress updated successfully!");
+              closeModal("progressModal");
+              loadEnrollments();
+            } else {
+              showNotification(
+                result.error || "Failed to update progress",
+                "error",
+              );
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            showNotification("Failed to update progress", "error");
+          }
+        });
+
+      async function deleteEnrollment(id) {
+        if (confirm("Are you sure you want to remove this enrollment?")) {
+          try {
+            const response = await fetch(`/api/enrollments/${id}`, {
+              method: "DELETE",
+            });
+            const result = await response.json();
+
+            if (result.success) {
+              showNotification("Enrollment removed successfully");
+              loadEnrollments();
+            } else {
+              showNotification(
+                result.error || "Failed to remove enrollment",
+                "error",
+              );
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            showNotification("Failed to remove enrollment", "error");
+          }
+        }
+      }
+
+      function closeModal(modalId) {
+        document.getElementById(modalId).style.display = "none";
+      }
+
+      async function handleLogout() {
+        try {
+          await fetch("/api/logout", { method: "POST" });
+          window.location.href = "/index.html";
+        } catch (error) {
+          showNotification("Logout failed", "error");
+        }
+      }
+
+      async function checkAuth() {
+        try {
+          const response = await fetch("/api/check-auth");
+          const result = await response.json();
+          if (!result.authenticated) {
+            window.location.href = "/index.html";
+          } else {
+            document.getElementById("userName").textContent =
+              result.user?.username || "User";
+            loadEnrollments();
+          }
+        } catch (error) {
+          window.location.href = "/index.html";
+        }
+      }
+
+      // Global functions
+      window.openNewEnrollmentModal = openNewEnrollmentModal;
+      window.closeModal = closeModal;
+      window.goToPage = goToPage;
+      window.updateProgress = updateProgress;
+      window.deleteEnrollment = deleteEnrollment;
+      window.handleLogout = handleLogout;
+      window.showNotification = showNotification;
+      window.loadEnrollments = loadEnrollments;
+
+      // Event listeners
+      document.getElementById("searchInput")?.addEventListener("input", () => {
+        currentPage = 1;
+        loadEnrollments();
+      });
+
+      document
+        .getElementById("statusFilter")
+        ?.addEventListener("change", () => {
+          currentPage = 1;
+          loadEnrollments();
+        });
+
+      // Initialize
+      checkAuth();
+
+      // Theme toggle function
+      window.toggleTheme = function () {
+        if (document.body.classList.contains("dark-mode")) {
+          document.body.classList.remove("dark-mode");
+          localStorage.setItem("theme", "light");
+          document.getElementById("themeToggle").textContent = "🌙";
+        } else {
+          document.body.classList.add("dark-mode");
+          localStorage.setItem("theme", "dark");
+          document.getElementById("themeToggle").textContent = "☀️";
+        }
+      };
+    </script>
+    <script src="/js/mobile.js"></script>
+  </body>
+</html>

@@ -1,0 +1,779 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>System Settings - Rehab System</title>
+    <!-- Boxicons CSS -->
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      .settings-section {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+      .settings-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f0f0;
+      }
+      .settings-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+      }
+      .tab-btn {
+        padding: 10px 20px;
+        background: #f0f0f0;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+      .tab-btn.active {
+        background: var(--primary-color);
+        color: white;
+      }
+      .tab-pane {
+        display: none;
+      }
+      .tab-pane.active {
+        display: block;
+      }
+      .config-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+      }
+      .config-item:last-child {
+        border-bottom: none;
+      }
+      .toggle-switch {
+        width: 50px;
+        height: 24px;
+        background: #ccc;
+        border-radius: 12px;
+        position: relative;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+      .toggle-switch.active {
+        background: var(--secondary-color);
+      }
+      .toggle-switch::after {
+        content: "";
+        width: 20px;
+        height: 20px;
+        background: white;
+        border-radius: 50%;
+        position: absolute;
+        top: 2px;
+        left: 3px;
+        transition: transform 0.3s;
+      }
+      .toggle-switch.active::after {
+        transform: translateX(26px);
+      }
+      .facility-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .facility-table th,
+      .facility-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+      }
+      .facility-table th {
+        background: #f8f9fa;
+        font-weight: 600;
+      }
+      .edit-facility-btn,
+      .delete-facility-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 5px;
+        margin: 0 3px;
+      }
+      .save-footer {
+        position: sticky;
+        bottom: 0;
+        background: white;
+        padding: 15px;
+        margin-top: 20px;
+        border-top: 1px solid #ddd;
+        text-align: right;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <h2>🏛️ Rehab System</h2>
+          <p>Prisoner Education & Rehabilitation</p>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="/dashboard.html" class="nav-item"
+            ><i class="bx bxs-dashboard"></i> Dashboard</a
+          >
+          <a href="/prisoners.html" class="nav-item"
+            ><i class="bx bxs-group"></i> Prisoners</a
+          >
+          <a href="/gallery.html" class="nav-item"
+            ><i class="bx bxs-image"></i> Gallery</a
+          >
+          <a href="/programs.html" class="nav-item"
+            ><i class="bx bxs-book"></i> Programs</a
+          >
+          <a href="/enrollments.html" class="nav-item"
+            ><i class="bx bxs-graduation"></i> Enrollments</a
+          >
+          <a href="/sessions.html" class="nav-item"
+            ><i class="bx bxs-calendar"></i> Sessions</a
+          >
+          <a href="/staff.html" class="nav-item"
+            ><i class="bx bxs-user-badge"></i> Staff</a
+          >
+          <a href="/reports.html" class="nav-item"
+            ><i class="bx bxs-report"></i> Reports</a
+          >
+          <a href="/settings.html" class="nav-item"
+            ><i class="bx bxs-cog"></i> Settings</a
+          >
+        </nav>
+      </aside>
+
+      <div class="main-content">
+        <div class="top-bar">
+          <h1 class="page-title">System Settings</h1>
+          <div class="user-menu">
+            <span class="user-name" id="userName">User</span>
+            <button
+              id="themeToggle"
+              class="theme-toggle"
+              onclick="toggleTheme()"
+            >
+              🌙
+            </button>
+            <button class="logout-btn" onclick="handleLogout()">Logout</button>
+          </div>
+        </div>
+
+        <div class="content-area">
+          <p style="color: var(--gray); margin-bottom: 20px">
+            Manage institutional configurations, facility access and global
+            program frameworks
+          </p>
+
+          <!-- Settings Tabs -->
+          <div class="settings-tabs">
+            <button class="tab-btn active" onclick="switchTab('facility')">
+              🏢 Facility Management
+            </button>
+            <button class="tab-btn" onclick="switchTab('program')">
+              📚 Program & Session Types
+            </button>
+            <button class="tab-btn" onclick="switchTab('user')">
+              👥 User Roles
+            </button>
+            <button class="tab-btn" onclick="switchTab('security')">
+              🔒 Security Audits
+            </button>
+            <button class="tab-btn" onclick="switchTab('system')">
+              ⚙️ System Configs
+            </button>
+          </div>
+
+          <!-- Facility Management Tab -->
+          <div id="facilityTab" class="tab-pane active">
+            <div class="settings-section">
+              <div class="settings-header">
+                <h3>Facility Management</h3>
+                <button class="btn-primary" onclick="addFacility()">
+                  + Add Facility
+                </button>
+              </div>
+              <table class="facility-table">
+                <thead>
+                  <tr>
+                    <th>Location Name</th>
+                    <th>Capacity</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="facilitiesTable">
+                  <tr>
+                    <td colspan="4">Loading...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Program Types Tab -->
+          <div id="programTab" class="tab-pane">
+            <div class="settings-section">
+              <div class="settings-header">
+                <h3>Program Types</h3>
+                <button class="btn-primary" onclick="addProgramType()">
+                  + Add Program Type
+                </button>
+              </div>
+              <div id="programTypesList"></div>
+            </div>
+
+            <div class="settings-section">
+              <div class="settings-header">
+                <h3>Session Types</h3>
+                <button class="btn-primary" onclick="addSessionType()">
+                  + Add Session Type
+                </button>
+              </div>
+              <div id="sessionTypesList"></div>
+            </div>
+          </div>
+
+          <!-- User Roles Tab -->
+          <div id="userTab" class="tab-pane">
+            <div class="settings-section">
+              <div class="settings-header">
+                <h3>User Roles & Permissions</h3>
+                <button class="btn-primary" onclick="addUserRole()">
+                  + Add Role
+                </button>
+              </div>
+              <div id="userRolesList"></div>
+            </div>
+
+            <div class="settings-section">
+              <h3>System Users</h3>
+              <div id="systemUsersList"></div>
+            </div>
+          </div>
+
+          <!-- Security Audits Tab -->
+          <div id="securityTab" class="tab-pane">
+            <div class="settings-section">
+              <h3>Security Audit Log</h3>
+              <div id="auditLog"></div>
+            </div>
+
+            <div class="settings-section">
+              <h3>Login History</h3>
+              <div id="loginHistory"></div>
+            </div>
+          </div>
+
+          <!-- System Configs Tab -->
+          <div id="systemTab" class="tab-pane">
+            <div class="settings-section">
+              <h3>System Configurations</h3>
+
+              <div class="config-item">
+                <div>
+                  <strong>Automated Progress Alerts</strong>
+                  <p style="font-size: 12px; color: gray">
+                    Notify case workers when milestones are met or missed
+                  </p>
+                </div>
+                <div
+                  class="toggle-switch active"
+                  onclick="toggleConfig(this, 'autoAlerts')"
+                ></div>
+              </div>
+
+              <div class="config-item">
+                <div>
+                  <strong>256-bit Encryption Status</strong>
+                  <p style="font-size: 12px; color: gray">
+                    Mandatory institutional data protection level
+                  </p>
+                </div>
+                <div
+                  class="toggle-switch active"
+                  onclick="toggleConfig(this, 'encryption')"
+                ></div>
+              </div>
+
+              <div class="config-item">
+                <div>
+                  <strong>Multi Factor Auth (MFA)</strong>
+                  <p style="font-size: 12px; color: gray">
+                    Require biometrics for staff Administrative Access
+                  </p>
+                </div>
+                <div
+                  class="toggle-switch"
+                  onclick="toggleConfig(this, 'mfa')"
+                ></div>
+              </div>
+
+              <div class="config-item">
+                <div>
+                  <strong>Session Timeout</strong>
+                  <p style="font-size: 12px; color: gray">
+                    Auto logout after inactivity
+                  </p>
+                </div>
+                <select
+                  id="sessionTimeout"
+                  onchange="updateConfig('sessionTimeout', this.value)"
+                >
+                  <option value="15">15 minutes</option>
+                  <option value="30" selected>30 minutes</option>
+                  <option value="60">1 hour</option>
+                  <option value="120">2 hours</option>
+                </select>
+              </div>
+
+              <div class="config-item">
+                <div>
+                  <strong>Backup Schedule</strong>
+                  <p style="font-size: 12px; color: gray">
+                    Automatic database backup frequency
+                  </p>
+                </div>
+                <select
+                  id="backupSchedule"
+                  onchange="updateConfig('backupSchedule', this.value)"
+                >
+                  <option value="daily">Daily</option>
+                  <option value="weekly" selected>Weekly</option>
+                  <option value="monthly">Monthly</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <h3>System Information</h3>
+              <div class="config-item">
+                <strong>Version:</strong>
+                <span>2.1.0</span>
+              </div>
+              <div class="config-item">
+                <strong>Last Updated:</strong>
+                <span>October 24, 2026</span>
+              </div>
+              <div class="config-item">
+                <strong>Database Size:</strong>
+                <span>124 MB</span>
+              </div>
+              <div class="config-item">
+                <strong>Active Sessions:</strong>
+                <span id="activeSessions">3</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Save Footer -->
+          <div class="save-footer">
+            <span style="float: left; color: gray; font-size: 12px"
+              >Last modified by admin on Oct 24 2026 at 11:00 pm</span
+            >
+            <button class="btn-secondary" onclick="discardChanges()">
+              Discard Changes
+            </button>
+            <button class="btn-primary" onclick="saveChanges()">
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Facility Modal -->
+    <div id="facilityModal" class="modal">
+      <div class="modal-content" style="max-width: 450px">
+        <div class="modal-header">
+          <h3>Add New Facility</h3>
+          <span class="close-modal" onclick="closeModal('facilityModal')"
+            >&times;</span
+          >
+        </div>
+        <form id="facilityForm">
+          <div class="form-group">
+            <label>Facility Name</label>
+            <input
+              type="text"
+              name="name"
+              required
+              placeholder="e.g., Kality Maremiva"
+            />
+          </div>
+          <div class="form-group">
+            <label>Capacity (Units)</label>
+            <input
+              type="number"
+              name="capacity"
+              required
+              placeholder="e.g., 430"
+            />
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select name="status">
+              <option value="Complete">Complete</option>
+              <option value="Under Maintenance">Under Maintenance</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-primary">Add Facility</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script>
+      // Tab switching
+      function switchTab(tabName) {
+        document.querySelectorAll(".tab-pane").forEach((pane) => {
+          pane.classList.remove("active");
+        });
+        document.getElementById(`${tabName}Tab`).classList.add("active");
+
+        document.querySelectorAll(".tab-btn").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+        event.target.classList.add("active");
+
+        // Load tab data
+        if (tabName === "facility") loadFacilities();
+        if (tabName === "program") loadProgramTypes();
+        if (tabName === "user") loadUserRoles();
+        if (tabName === "security") loadAuditLog();
+      }
+
+      // Load facilities
+      async function loadFacilities() {
+        try {
+          const facilities = await API.getFacilities();
+          const tbody = document.getElementById("facilitiesTable");
+          tbody.innerHTML = facilities
+            .map(
+              (f) => `
+                    <tr>
+                        <td>${f.name}</td>
+                        <td>${f.capacity} Units</td>
+                        <td>${getStatusBadge(f.status)}</td>
+                        <td>
+                            <button class="edit-facility-btn" onclick="editFacility(${f.id})">✏️</button>
+                            <button class="delete-facility-btn" onclick="deleteFacility(${f.id})">🗑️</button>
+                        </td>
+                    </tr>
+                `,
+            )
+            .join("");
+        } catch (error) {
+          console.error("Error loading facilities:", error);
+        }
+      }
+
+      // Add facility
+      function addFacility() {
+        document.getElementById("facilityModal").style.display = "flex";
+      }
+
+      document
+        .getElementById("facilityForm")
+        ?.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+          const data = {
+            name: formData.get("name"),
+            capacity: formData.get("capacity"),
+            status: formData.get("status"),
+          };
+
+          try {
+            const response = await fetch("/api/facilities", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(data),
+            });
+            const result = await response.json();
+            if (result.success) {
+              showNotification("Facility added successfully");
+              closeModal("facilityModal");
+              loadFacilities();
+              e.target.reset();
+            }
+          } catch (error) {
+            showNotification("Failed to add facility", "error");
+          }
+        });
+
+      function editFacility(id) {
+        showNotification("Edit facility feature coming soon", "info");
+      }
+
+      async function deleteFacility(id) {
+        if (confirm("Are you sure you want to delete this facility?")) {
+          try {
+            const response = await fetch(`/api/facilities/${id}`, {
+              method: "DELETE",
+            });
+            const result = await response.json();
+            if (result.success) {
+              showNotification("Facility deleted");
+              loadFacilities();
+            }
+          } catch (error) {
+            showNotification("Failed to delete facility", "error");
+          }
+        }
+      }
+
+      // Load program types
+      function loadProgramTypes() {
+        const programTypes = [
+          { name: "Vocational Training", status: "Active", enrollments: 245 },
+          { name: "Educational Programs", status: "Active", enrollments: 189 },
+          { name: "Behavioral Therapy", status: "Active", enrollments: 156 },
+          { name: "Substance Abuse", status: "Active", enrollments: 98 },
+          { name: "Life Skills", status: "Inactive", enrollments: 0 },
+        ];
+
+        document.getElementById("programTypesList").innerHTML = programTypes
+          .map(
+            (p) => `
+                <div class="config-item">
+                    <div>
+                        <strong>${p.name}</strong>
+                        <p style="font-size: 12px;">${p.enrollments} enrolled prisoners</p>
+                    </div>
+                    <div>${getStatusBadge(p.status)}</div>
+                </div>
+            `,
+          )
+          .join("");
+
+        const sessionTypes = [
+          {
+            name: "Individual Counseling",
+            duration: "1 hour",
+            status: "Active",
+          },
+          { name: "Group Therapy", duration: "2 hours", status: "Active" },
+          { name: "Workshop", duration: "3 hours", status: "Active" },
+          { name: "Assessment", duration: "30 min", status: "Active" },
+        ];
+
+        document.getElementById("sessionTypesList").innerHTML = sessionTypes
+          .map(
+            (s) => `
+                <div class="config-item">
+                    <div>
+                        <strong>${s.name}</strong>
+                        <p style="font-size: 12px;">Duration: ${s.duration}</p>
+                    </div>
+                    <div>${getStatusBadge(s.status)}</div>
+                </div>
+            `,
+          )
+          .join("");
+      }
+
+      function addProgramType() {
+        showNotification("Add program type feature coming soon", "info");
+      }
+      function addSessionType() {
+        showNotification("Add session type feature coming soon", "info");
+      }
+      function addUserRole() {
+        showNotification("Add user role feature coming soon", "info");
+      }
+
+      // Load user roles
+      function loadUserRoles() {
+        const roles = [
+          { name: "Administrator", permissions: "Full access", users: 2 },
+          { name: "Staff", permissions: "Read/Write limited", users: 15 },
+          { name: "Viewer", permissions: "Read only", users: 5 },
+          {
+            name: "Case Manager",
+            permissions: "Prisoner management only",
+            users: 8,
+          },
+        ];
+
+        document.getElementById("userRolesList").innerHTML = roles
+          .map(
+            (r) => `
+                <div class="config-item">
+                    <div>
+                        <strong>${r.name}</strong>
+                        <p style="font-size: 12px;">${r.permissions}</p>
+                    </div>
+                    <div>${r.users} users</div>
+                </div>
+            `,
+          )
+          .join("");
+
+        const users = [
+          {
+            username: "admin",
+            role: "Administrator",
+            lastLogin: "2026-04-25 10:30 AM",
+          },
+          {
+            username: "staff1",
+            role: "Staff",
+            lastLogin: "2026-04-24 03:15 PM",
+          },
+          {
+            username: "caseworker1",
+            role: "Case Manager",
+            lastLogin: "2026-04-25 09:00 AM",
+          },
+        ];
+
+        document.getElementById("systemUsersList").innerHTML = users
+          .map(
+            (u) => `
+                <div class="config-item">
+                    <div>
+                        <strong>${u.username}</strong>
+                        <p style="font-size: 12px;">${u.role}</p>
+                    </div>
+                    <div>Last: ${u.lastLogin}</div>
+                </div>
+            `,
+          )
+          .join("");
+      }
+
+      // Load audit log
+      function loadAuditLog() {
+        const audits = [
+          {
+            action: "User admin logged in",
+            timestamp: "2026-04-25 10:30:00",
+            ip: "192.168.1.1",
+          },
+          {
+            action: "Prisoner record updated",
+            timestamp: "2026-04-25 09:15:00",
+            ip: "192.168.1.1",
+          },
+          {
+            action: "Program enrollment added",
+            timestamp: "2026-04-24 14:30:00",
+            ip: "192.168.1.5",
+          },
+          {
+            action: "System settings modified",
+            timestamp: "2026-04-24 11:00:00",
+            ip: "192.168.1.1",
+          },
+        ];
+
+        document.getElementById("auditLog").innerHTML = `
+                <table class="facility-table">
+                    <thead><tr><th>Action</th><th>Timestamp</th><th>IP Address</th></tr></thead>
+                    <tbody>
+                        ${audits.map((a) => `<tr><td>${a.action}</td><td>${a.timestamp}</td><td>${a.ip}</td></tr>`).join("")}
+                    </tbody>
+                </table>
+            `;
+
+        const loginHistory = [
+          {
+            username: "admin",
+            loginTime: "2026-04-25 10:30:00",
+            status: "Success",
+          },
+          {
+            username: "staff1",
+            loginTime: "2026-04-25 09:00:00",
+            status: "Success",
+          },
+          {
+            username: "unknown",
+            loginTime: "2026-04-25 08:45:00",
+            status: "Failed",
+          },
+        ];
+
+        document.getElementById("loginHistory").innerHTML = `
+                <table class="facility-table">
+                    <thead><tr><th>Username</th><th>Time</th><th>Status</th></tr></thead>
+                    <tbody>
+                        ${loginHistory.map((h) => `<tr><td>${h.username}</td><td>${h.loginTime}</td><td>${getStatusBadge(h.status)}</td></tr>`).join("")}
+                    </tbody>
+                </table>
+            `;
+      }
+
+      // Toggle configuration
+      function toggleConfig(element, configName) {
+        element.classList.toggle("active");
+        updateConfig(configName, element.classList.contains("active"));
+      }
+
+      function updateConfig(configName, value) {
+        console.log(`${configName} updated to:`, value);
+        showNotification(`${configName} updated`, "success");
+      }
+
+      function discardChanges() {
+        if (confirm("Discard all unsaved changes?")) {
+          showNotification("Changes discarded", "info");
+          loadFacilities();
+        }
+      }
+
+      function saveChanges() {
+        showNotification("Settings saved successfully!", "success");
+      }
+
+      function closeModal(modalId) {
+        document.getElementById(modalId).style.display = "none";
+      }
+
+      async function handleLogout() {
+        await API.logout();
+        window.location.href = "/index.html";
+      }
+
+      async function checkAuth() {
+        const result = await API.checkAuth();
+        if (!result.authenticated) {
+          window.location.href = "/index.html";
+        } else {
+          document.getElementById("userName").textContent =
+            result.user?.username || "User";
+          loadFacilities();
+          document.getElementById("activeSessions").textContent =
+            Math.floor(Math.random() * 10) + 1;
+        }
+      }
+
+      checkAuth();
+    </script>
+    <script src="/js/theme.js"></script>
+    <script src="/js/role-nav.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        displayUserInfo();
+        initRoleBasedNavigation();
+      });
+    </script>
+    <script src="/js/mobile.js"></script>
+  </body>
+</html>
