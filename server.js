@@ -47,42 +47,35 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Database connection
-// Database connection with retry logic
-let db;
+// Database connection pool (PRODUCTION READY)
+const db = mysql.createPool({
+  host: process.env.DB_HOST || "localhost",
+  user: process.env.DB_USER || "root",
+  password: process.env.DB_PASSWORD || "",
+  database: process.env.DB_NAME || "prison_rehab_system",
+  port: process.env.DB_PORT || 3306,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 10000,
+});
 
-function connectDatabase() {
-  db = mysql.createConnection({
-    host: process.env.DB_HOST || "localhost",
-    user: process.env.DB_USER || "root",
-    password: process.env.DB_PASSWORD || "",
-    database: process.env.DB_NAME || "prison_rehab_system",
-    port: process.env.DB_PORT || 3306,
-    connectTimeout: 60000,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
-  });
-
-  db.connect((err) => {
-    if (err) {
-      console.error("Database connection failed:", err.message);
-      console.log("Retrying connection in 2 seconds...");
-      setTimeout(connectDatabase, 2000);
-      return;
-    }
+// Test the connection
+db.getConnection((err, connection) => {
+  if (err) {
+    console.error("❌ Database connection failed:", err.message);
+    console.error("Please check your environment variables:");
+    console.error("  DB_HOST:", process.env.DB_HOST);
+    console.error("  DB_USER:", process.env.DB_USER);
+    console.error("  DB_NAME:", process.env.DB_NAME);
+    console.error("  DB_PORT:", process.env.DB_PORT);
+    process.exit(1);
+  } else {
     console.log("✅ Connected to MySQL database");
-  });
-
-  db.on("error", (err) => {
-    console.error("Database error:", err.message);
-    if (err.code === "PROTOCOL_CONNECTION_LOST" || err.code === "ECONNRESET") {
-      console.log("Reconnecting to database...");
-      connectDatabase();
-    }
-  });
-}
-
-connectDatabase();
+    connection.release();
+  }
+});
 
 //  ROLE-BASED MIDDLEWARE
 
