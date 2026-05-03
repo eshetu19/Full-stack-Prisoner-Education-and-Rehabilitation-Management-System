@@ -9,10 +9,10 @@ const db = mysql.createConnection({
   database: process.env.DB_NAME || "prison_rehab_system",
 });
 
-// Test password
+
 const testPassword = "admin123";
 
-// Query users
+
 db.query("SELECT id, username, password FROM users", async (err, users) => {
   if (err) {
     console.error("Error:", err);

@@ -1,6 +1,6 @@
 async function loadDashboard() {
     try {
-        // Load stats
+       
         const statsResponse = await fetch('/api/dashboard/stats');
         const stats = await statsResponse.json();
         
@@ -9,7 +9,7 @@ async function loadDashboard() {
         document.getElementById('currentEnrollments').textContent = stats.currentEnrollments || 0;
         document.getElementById('sessionsThisMonth').textContent = stats.sessionsThisMonth || 0;
         
-        // Load recent activities
+        
         const activitiesResponse = await fetch('/api/dashboard/recent-activity');
         const activities = await activitiesResponse.json();
         
@@ -89,7 +89,7 @@ async function checkAuth() {
     }
 }
 
-// Make functions global
+
 window.handleLogout = handleLogout;
 
 

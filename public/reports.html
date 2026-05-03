@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Reports & Analytics - Rehab System</title>
-    <!-- Boxicons CSS -->
+
     <link
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
       rel="stylesheet"
@@ -358,7 +358,6 @@
             </div>
           </div>
 
-          <!-- Statistics Cards -->
           <div class="stats-grid">
             <div class="stat-card">
               <div class="stat-title">Total Program Enrollments</div>
@@ -383,7 +382,6 @@
             </div>
           </div>
 
-          <!-- Completion Rates by Category -->
           <div class="chart-container">
             <h3>Completion Rates by Category</h3>
             <p style="color: var(--gray); margin-bottom: 20px">
@@ -392,7 +390,6 @@
             <div id="categoryRates"></div>
           </div>
 
-          <!-- Program Performance -->
           <div class="chart-container">
             <div class="report-header">
               <h3>Program Performance Overview</h3>
@@ -410,7 +407,6 @@
             </div>
           </div>
 
-          <!-- Prisoner Statistics -->
           <div class="chart-container">
             <div class="report-header">
               <h3>Prisoner Demographics</h3>
@@ -425,7 +421,6 @@
             <div id="prisonerDemographics"></div>
           </div>
 
-          <!-- Recent Reports -->
           <div class="report-card">
             <div class="report-header">
               <h3>Generated Reports</h3>
@@ -460,7 +455,6 @@
       </div>
     </div>
 
-    <!-- Change Password Modal -->
     <div id="changePasswordModal" class="modal">
       <div class="modal-content" style="max-width: 450px">
         <div class="modal-header">
@@ -532,7 +526,6 @@
       </div>
     </div>
 
-    <!-- Report Generation Modal -->
     <div id="reportModal" class="modal">
       <div class="modal-content" style="max-width: 500px">
         <div class="modal-header">
@@ -584,7 +577,6 @@
         staff: [],
       };
 
-      // Utility Functions
       function showNotification(message, type = "success") {
         const notification = document.createElement("div");
         notification.className = `notification ${type}`;
@@ -630,14 +622,12 @@
         }
       }
 
-      // Load saved theme
       const savedTheme = localStorage.getItem("theme");
       if (savedTheme === "dark") {
         document.body.classList.add("dark-mode");
         document.getElementById("themeToggle").textContent = "☀️";
       }
 
-      // Load all data for reports
       async function loadReportData() {
         try {
           const [programsRes, prisonersRes, enrollmentsRes, staffRes] =
@@ -719,7 +709,7 @@
                                         <span style="font-size: 12px; color: #666; margin-left: 10px;">${program.program_type}</span>
                                     </div>
                                     <div>
-                                        <span>📊 ${program.enrollments || 0} enrolled | </span>
+                                        <span><i class='bx bx-bar-chart-square'></i> ${program.enrollments || 0} enrolled | </span>
                                         <strong style="color: ${barColor};">${avgComp}% complete</strong>
                                     </div>
                                 </div>
@@ -728,7 +718,7 @@
                                 </div>
                                 <div style="display: flex; gap: 20px; margin-top: 8px; font-size: 11px; color: #666;">
                                     <span>✅ Completed: ${program.completed_count || 0}</span>
-                                    <span>🔄 In Progress: ${program.in_progress_count || 0}</span>
+                                    <span><i class='bx bx-refresh'></i> In Progress: ${program.in_progress_count || 0}</span>
                                 </div>
                             </div>
                         `;
@@ -865,15 +855,13 @@
                     <td style="padding: 12px;">${report.type}</td>
                     <td style="padding: 12px;">${getStatusBadge(report.status)}</td>
                     <td style="padding: 12px;">
-                        <button class="view-btn" onclick="downloadReport('${report.name}')" style="background: none; border: none; cursor: pointer; color: var(--primary-color);">📥 Download</button>
+                        <button class="view-btn" onclick="downloadReport('${report.name}')" style="background: none; border: none; cursor: pointer; color: var(--primary-color);"> <i class='bx bx-download'></i>Download</button>
                     </td>
                 </tr>
             `,
           )
           .join("");
       }
-
-      
 
       async function exportToExcel() {
         try {
@@ -1112,7 +1100,7 @@
                 ).toFixed(1)
               : 0;
 
-          excelData.push([], ["📊 SUMMARY"]);
+          excelData.push([], [" SUMMARY"]);
           excelData.push(["Total Programs", programs.length]);
           excelData.push(["Total Enrollments", totalEnrollments]);
           excelData.push(["Average Completion Rate", avgCompletion + "%"]);
@@ -1176,7 +1164,7 @@
             ["Prisoner Demographics Report"],
             [`Generated on: ${new Date().toLocaleString()}`],
             [],
-            ["📊 DEMOGRAPHIC SUMMARY"],
+            [" DEMOGRAPHIC SUMMARY"],
             ["Category", "Count", "Percentage"],
             ["Total Prisoners", prisoners.length, "100%"],
             [
@@ -1205,7 +1193,7 @@
               `${((notEnrolledCount / prisoners.length) * 100).toFixed(1)}%`,
             ],
             [],
-            ["📊 AGE DISTRIBUTION"],
+            [" AGE DISTRIBUTION"],
             ["Age Group", "Count", "Percentage"],
             [
               "18-25",
@@ -1228,7 +1216,7 @@
               `${((ageGroups["46+"] / prisoners.length) * 100).toFixed(1)}%`,
             ],
             [],
-            ["📊 FACILITY DISTRIBUTION"],
+            [" FACILITY DISTRIBUTION"],
             ["Facility", "Count", "Percentage"],
           ];
 
@@ -1240,7 +1228,7 @@
             ]);
           }
 
-          excelData.push([], ["📋 PRISONER LIST (First 100)"]);
+          excelData.push([], [" PRISONER LIST (First 100)"]);
           excelData.push([
             "Name",
             "ID Number",
@@ -1295,7 +1283,7 @@
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        showNotification(`📥 Downloading ${reportName}...`, "success");
+        showNotification(` Downloading ${reportName}...`, "success");
       }
 
       function closeModal(modalId) {
@@ -1443,7 +1431,6 @@
           });
         });
 
-      // Make functions global
       window.exportToExcel = exportToExcel;
       window.exportToPDF = exportToPDF;
       window.exportToCSV = exportToCSV;

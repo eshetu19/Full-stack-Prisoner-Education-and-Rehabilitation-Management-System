@@ -1,7 +1,6 @@
 let currentPage = 1;
 let totalPages = 1;
 
-// Load staff data
 async function loadStaff() {
   try {
     const search = document.getElementById("searchInput")?.value || "";
@@ -17,7 +16,6 @@ async function loadStaff() {
     const tbody = document.getElementById("staffTable");
     if (!tbody) return;
 
-    // Update stats
     document.getElementById("totalStaff").textContent = data.total || 0;
     const activeInstructors = (data.staff || []).filter(
       (s) =>
@@ -31,7 +29,6 @@ async function loadStaff() {
     ).length;
     document.getElementById("onLeaveCount").textContent = onLeaveCount;
 
-    // Render table
     if (data.staff && data.staff.length > 0) {
       tbody.innerHTML = data.staff
         .map(
@@ -45,9 +42,9 @@ async function loadStaff() {
                     <td>${staff.facility || "N/A"}</td>
                     <td>${getStatusBadge(staff.employment_status)}</td>
                     <td class="action-icons">
-                        <button class="view-btn" onclick="viewStaff(${staff.id})" title="View">👁️</button>
-                        <button class="edit-btn" onclick="editStaff(${staff.id})" title="Edit">✏️</button>
-                        <button class="delete-btn" onclick="deleteStaff(${staff.id})" title="Delete">🗑️</button>
+                        <button class="view-btn" onclick="viewStaff(${staff.id})" title="View"><i class='bx bx-show'></i></button>
+                        <button class="edit-btn" onclick="editStaff(${staff.id})" title="Edit"><i class='bx bx-edit-alt'></i></button>
+                        <button class="delete-btn" onclick="deleteStaff(${staff.id})" title="Delete"><i class='bx bx-trash'></i></button>
                     </td>
                 </tr>
             `,
@@ -70,7 +67,6 @@ async function loadStaff() {
   }
 }
 
-// Update pagination
 function updatePagination() {
   const paginationDiv = document.getElementById("pagination");
   if (!paginationDiv) return;
@@ -95,13 +91,11 @@ function updatePagination() {
   paginationDiv.innerHTML = html;
 }
 
-// Go to page
 function goToPage(page) {
   currentPage = page;
   loadStaff();
 }
 
-// Open Add Staff Modal
 function openAddStaffModal() {
   const modal = document.getElementById("addStaffModal");
   if (modal) {
@@ -114,7 +108,6 @@ function openAddStaffModal() {
   }
 }
 
-// Load facilities for dropdown
 async function loadFacilitiesForModal() {
   try {
     const response = await fetch("/api/facilities");
@@ -131,7 +124,6 @@ async function loadFacilitiesForModal() {
   }
 }
 
-// Close Modal
 function closeModal(modalId) {
   const modal = document.getElementById(modalId);
   if (modal) {
@@ -139,7 +131,6 @@ function closeModal(modalId) {
   }
 }
 
-// Add Staff Form Submission
 document
   .getElementById("addStaffForm")
   ?.addEventListener("submit", async (e) => {
@@ -169,7 +160,6 @@ document
     }
   });
 
-// Delete Staff
 async function deleteStaff(id) {
   if (confirm("Are you sure you want to delete this staff member?")) {
     try {
@@ -191,7 +181,6 @@ async function deleteStaff(id) {
   }
 }
 
-// View Staff Details
 async function viewStaff(id) {
   try {
     const response = await fetch(`/api/staff/${id}`);
@@ -221,7 +210,6 @@ async function viewStaff(id) {
   }
 }
 
-// Edit Staff
 async function editStaff(id) {
   try {
     const response = await fetch(`/api/staff/${id}`);
@@ -240,7 +228,6 @@ async function editStaff(id) {
   }
 }
 
-// Edit Staff Form Submission
 document
   .getElementById("editStaffForm")
   ?.addEventListener("submit", async (e) => {
@@ -274,7 +261,6 @@ document
     }
   });
 
-// Load filter options
 async function loadFilterOptions() {
   try {
     const response = await fetch("/api/facilities");
@@ -291,7 +277,6 @@ async function loadFilterOptions() {
   }
 }
 
-// Event listeners for filters
 document.getElementById("searchInput")?.addEventListener("input", () => {
   currentPage = 1;
   loadStaff();
@@ -312,7 +297,6 @@ document.getElementById("statusFilter")?.addEventListener("change", () => {
   loadStaff();
 });
 
-// Logout function
 async function handleLogout() {
   try {
     await fetch("/api/logout", { method: "POST" });
@@ -322,7 +306,6 @@ async function handleLogout() {
   }
 }
 
-// Check authentication
 async function checkAuth() {
   try {
     const response = await fetch("/api/check-auth");
@@ -344,7 +327,6 @@ async function checkAuth() {
   }
 }
 
-// Make functions global
 window.openAddStaffModal = openAddStaffModal;
 window.closeModal = closeModal;
 window.goToPage = goToPage;
@@ -352,6 +334,5 @@ window.viewStaff = viewStaff;
 window.editStaff = editStaff;
 window.deleteStaff = deleteStaff;
 window.handleLogout = handleLogout;
-
 
 checkAuth();

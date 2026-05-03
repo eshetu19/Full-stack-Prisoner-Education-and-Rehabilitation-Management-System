@@ -1,6 +1,6 @@
 
 function initMobileMenu() {
-  // Create overlay element if it doesn't exist
+  
   if (!document.querySelector(".sidebar-overlay")) {
     const overlay = document.createElement("div");
     overlay.className = "sidebar-overlay";
@@ -11,10 +11,10 @@ function initMobileMenu() {
     });
   }
 
-  // Check if sidebar toggle button exists
+  
   let menuToggle = document.querySelector(".menu-toggle");
   if (!menuToggle) {
-    // Create menu toggle button for mobile
+    
     const topBar = document.querySelector(".top-bar");
     if (topBar && window.innerWidth <= 768) {
       const toggleBtn = document.createElement("button");
@@ -48,7 +48,7 @@ function toggleSidebar() {
     overlay.classList.toggle("active");
   }
 
-  // Prevent body scroll when sidebar is open
+  
   if (sidebar.classList.contains("open")) {
     document.body.style.overflow = "hidden";
   } else {
@@ -85,5 +85,5 @@ window.addEventListener("resize", function () {
   }
 });
 
-// Initialize mobile menu
+
 document.addEventListener("DOMContentLoaded", initMobileMenu);

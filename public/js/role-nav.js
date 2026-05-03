@@ -157,7 +157,7 @@ const ROLE_PERMISSIONS = {
   },
 };
 
-// Get user role from server
+
 async function fetchUserRole() {
   try {
     const response = await fetch("/api/user-role");
@@ -173,12 +173,12 @@ async function fetchUserRole() {
   return localStorage.getItem("userRole") || "viewer";
 }
 
-// Display user info in top bar
+
 async function displayUserInfo() {
   const username = localStorage.getItem("username") || "User";
   let role = localStorage.getItem("userRole") || "viewer";
 
-  // If role not in localStorage, fetch from server
+  
   if (!localStorage.getItem("userRole")) {
     role = await fetchUserRole();
   }
@@ -196,14 +196,14 @@ async function displayUserInfo() {
   }
 }
 
-// Initialize role-based navigation
+
 async function initRoleBasedNavigation() {
   const userRole = await fetchUserRole();
   const permissions = ROLE_PERMISSIONS[userRole] || ROLE_PERMISSIONS.viewer;
 
   console.log("Role-based navigation initialized for:", userRole);
 
-  // Update sidebar navigation
+  
   const sidebarNav = document.querySelector(".sidebar-nav");
   if (sidebarNav) {
     sidebarNav.innerHTML = permissions.menuItems
@@ -217,7 +217,7 @@ async function initRoleBasedNavigation() {
       .join("");
   }
 
-  // Hide add buttons for non-admin users on programs page
+  
   if (userRole !== "admin") {
     const addProgramBtn = document.querySelector(
       '#programsGrid + button, .btn-primary[onclick*="openAddProgramModal"]',
@@ -230,7 +230,7 @@ async function initRoleBasedNavigation() {
   return userRole;
 }
 
-// Check permission
+
 function hasPermission(action) {
   const userRole = localStorage.getItem("userRole") || "viewer";
   const permissions = ROLE_PERMISSIONS[userRole];
@@ -250,7 +250,7 @@ function hasPermission(action) {
   }
 }
 
-// Export functions to global scope
+
 window.displayUserInfo = displayUserInfo;
 window.initRoleBasedNavigation = initRoleBasedNavigation;
 window.hasPermission = hasPermission;

@@ -15,7 +15,7 @@ async function loadPrograms() {
 
     const grid = document.getElementById("programsGrid");
 
-    // Load enrollment counts for each program
+    
     for (let program of programs) {
       const statsResponse = await fetch(`/api/programs/${program.id}/stats`);
       const stats = await statsResponse.json();
@@ -54,7 +54,7 @@ async function loadPrograms() {
   }
 }
 
-// View program enrollments
+
 async function viewProgramEnrollments(programId) {
   try {
     const response = await fetch(`/api/programs/${programId}/enrollments`);
@@ -173,7 +173,7 @@ async function checkAuth() {
   }
 }
 
-// Make functions global
+
 window.openAddProgramModal = openAddProgramModal;
 window.closeModal = closeModal;
 window.viewProgramEnrollments = viewProgramEnrollments;

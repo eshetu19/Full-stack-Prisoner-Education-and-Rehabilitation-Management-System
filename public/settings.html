@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>System Settings - Rehab System</title>
-    <!-- Boxicons CSS -->
+
     <link
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
       rel="stylesheet"
@@ -180,26 +180,24 @@
             program frameworks
           </p>
 
-          <!-- Settings Tabs -->
           <div class="settings-tabs">
             <button class="tab-btn active" onclick="switchTab('facility')">
-              🏢 Facility Management
+              <i class="bx bx-buildings"></i> Facility Management
             </button>
             <button class="tab-btn" onclick="switchTab('program')">
-              📚 Program & Session Types
+              <i class="bx bxs-book"></i> Program & Session Types
             </button>
             <button class="tab-btn" onclick="switchTab('user')">
-              👥 User Roles
+              <i class="bx bx-user-circle"></i> User Roles
             </button>
             <button class="tab-btn" onclick="switchTab('security')">
-              🔒 Security Audits
+              <i class="bx bxs-lock-alt"></i> Security Audits
             </button>
             <button class="tab-btn" onclick="switchTab('system')">
-              ⚙️ System Configs
+              <i class="bx bxs-cog"></i> System Configs
             </button>
           </div>
 
-          <!-- Facility Management Tab -->
           <div id="facilityTab" class="tab-pane active">
             <div class="settings-section">
               <div class="settings-header">
@@ -226,7 +224,6 @@
             </div>
           </div>
 
-          <!-- Program Types Tab -->
           <div id="programTab" class="tab-pane">
             <div class="settings-section">
               <div class="settings-header">
@@ -249,7 +246,6 @@
             </div>
           </div>
 
-          <!-- User Roles Tab -->
           <div id="userTab" class="tab-pane">
             <div class="settings-section">
               <div class="settings-header">
@@ -267,7 +263,6 @@
             </div>
           </div>
 
-          <!-- Security Audits Tab -->
           <div id="securityTab" class="tab-pane">
             <div class="settings-section">
               <h3>Security Audit Log</h3>
@@ -280,7 +275,6 @@
             </div>
           </div>
 
-          <!-- System Configs Tab -->
           <div id="systemTab" class="tab-pane">
             <div class="settings-section">
               <h3>System Configurations</h3>
@@ -381,7 +375,6 @@
             </div>
           </div>
 
-          <!-- Save Footer -->
           <div class="save-footer">
             <span style="float: left; color: gray; font-size: 12px"
               >Last modified by admin on Oct 24 2026 at 11:00 pm</span
@@ -397,7 +390,6 @@
       </div>
     </div>
 
-    <!-- Add Facility Modal -->
     <div id="facilityModal" class="modal">
       <div class="modal-content" style="max-width: 450px">
         <div class="modal-header">
@@ -439,7 +431,6 @@
 
     <script src="/js/api.js"></script>
     <script>
-      // Tab switching
       function switchTab(tabName) {
         document.querySelectorAll(".tab-pane").forEach((pane) => {
           pane.classList.remove("active");
@@ -451,14 +442,12 @@
         });
         event.target.classList.add("active");
 
-        // Load tab data
         if (tabName === "facility") loadFacilities();
         if (tabName === "program") loadProgramTypes();
         if (tabName === "user") loadUserRoles();
         if (tabName === "security") loadAuditLog();
       }
 
-      // Load facilities
       async function loadFacilities() {
         try {
           const facilities = await API.getFacilities();
@@ -471,8 +460,8 @@
                         <td>${f.capacity} Units</td>
                         <td>${getStatusBadge(f.status)}</td>
                         <td>
-                            <button class="edit-facility-btn" onclick="editFacility(${f.id})">✏️</button>
-                            <button class="delete-facility-btn" onclick="deleteFacility(${f.id})">🗑️</button>
+                            <button class="edit-facility-btn" onclick="editFacility(${f.id})"><i class='bx bxs-edit-alt'></i></button>
+                            <button class="delete-facility-btn" onclick="deleteFacility(${f.id})"><i class='bx bx-trash'></i></button>
                         </td>
                     </tr>
                 `,
@@ -483,7 +472,7 @@
         }
       }
 
-      // Add facility
+     
       function addFacility() {
         document.getElementById("facilityModal").style.display = "flex";
       }
@@ -538,7 +527,7 @@
         }
       }
 
-      // Load program types
+      
       function loadProgramTypes() {
         const programTypes = [
           { name: "Vocational Training", status: "Active", enrollments: 245 },
@@ -598,7 +587,7 @@
         showNotification("Add user role feature coming soon", "info");
       }
 
-      // Load user roles
+      
       function loadUserRoles() {
         const roles = [
           { name: "Administrator", permissions: "Full access", users: 2 },
@@ -658,7 +647,7 @@
           .join("");
       }
 
-      // Load audit log
+      
       function loadAuditLog() {
         const audits = [
           {
@@ -720,7 +709,7 @@
             `;
       }
 
-      // Toggle configuration
+      
       function toggleConfig(element, configName) {
         element.classList.toggle("active");
         updateConfig(configName, element.classList.contains("active"));

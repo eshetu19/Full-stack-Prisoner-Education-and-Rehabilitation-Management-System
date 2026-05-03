@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Profile Gallery - Rehab System</title>
-    <!-- Boxicons CSS -->
+
     <link
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
       rel="stylesheet"
@@ -165,7 +165,6 @@
         margin-top: 40px;
       }
 
-      /* Lightbox Modal */
       .lightbox {
         display: none;
         position: fixed;
@@ -265,7 +264,6 @@
         }
       }
 
-      /* Animation */
       @keyframes fadeInUp {
         from {
           opacity: 0;
@@ -281,7 +279,6 @@
         animation: fadeInUp 0.5s ease forwards;
       }
 
-      /* Empty state */
       .empty-gallery {
         text-align: center;
         padding: 60px;
@@ -375,7 +372,7 @@
                 style="width: 200px"
               />
               <button class="view-btn-gallery" onclick="refreshGallery()">
-                🔄 Refresh
+                <i class="bx bx-refresh"></i> Refresh
               </button>
             </div>
           </div>
@@ -411,7 +408,6 @@
       </div>
     </div>
 
-    <!-- Lightbox Modal -->
     <div id="lightbox" class="lightbox" onclick="closeLightbox()">
       <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
       <div
@@ -446,7 +442,6 @@
       let currentFilter = "all";
       let currentLightboxIndex = 0;
 
-      // Load prisoners from API
       async function loadPrisoners() {
         try {
           const response = await fetch("/api/prisoners?limit=1000");
@@ -485,7 +480,6 @@
         currentFilter = filter;
         currentPage = 1;
 
-        // Update active button
         document.querySelectorAll(".filter-btn").forEach((btn) => {
           btn.classList.remove("active");
           if (
@@ -523,11 +517,9 @@
             );
             break;
           default:
-            // 'all' - no filter
             break;
         }
 
-        // Apply search
         const searchTerm = document
           .getElementById("searchGallery")
           .value.toLowerCase();
@@ -567,7 +559,6 @@
             const hasPhoto = prisoner.image_url && prisoner.image_url !== null;
             const photoUrl = hasPhoto ? prisoner.image_url : "";
 
-            // Get status color
             let statusColor = "";
             let statusText = prisoner.enrollment_status || "Not Enrolled";
             if (statusText === "Enrolled") statusColor = "#2ecc71";
@@ -579,27 +570,26 @@
                         <div class="status-overlay" style="background: ${statusColor};">${statusText}</div>
                         ${
                           hasPhoto
-                            ? `<img class="profile-image" src="${photoUrl}" alt="${prisoner.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3E%3Crect fill=\'%23667eea\' width=\'100\' height=\'100\'/%3E%3Ctext x=\'50\' y=\'55\' text-anchor=\'middle\' fill=\'white\' font-size=\'40\' dy=\'.3em\'%3E👤%3C/text%3E%3C/svg%3E';">`
-                            : `<div class="profile-image" style="background: linear-gradient(135deg, #667eea, #764ba2);">👤</div>`
+                            ? `<img class="profile-image" src="${photoUrl}" alt="${prisoner.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3E%3Crect fill=\'%23667eea\' width=\'100\' height=\'100\'/%3E%3Ctext x=\'50\' y=\'55\' text-anchor=\'middle\' fill=\'white\' font-size=\'40\' dy=\'.3em\'%3E%3C/text%3E%3C/svg%3E';">`
+                            : `<div class="profile-image" style="background: linear-gradient(135deg, #667eea, #764ba2);"> <i class='bx bx-user-circle' style="font-size: 90px; color: white;"></i></div>`
                         }
                         <div class="profile-info">
                             <div class="profile-name">${prisoner.name || "Unknown"}</div>
                             <div class="profile-details">
-                                <span>🆔 ${prisoner.id_number || "N/A"}</span>
-                                <span>📋 ${prisoner.age || "?"} yrs</span>
+                                <span><i class='bx bxs-id-card'></i> ${prisoner.id_number || "N/A"}</span>
+                                <span> ${prisoner.age || "?"} yrs</span>
                             </div>
                             <div class="profile-details">
-                                <span>📍 ${prisoner.prison_block || "Unknown"}</span>
-                                <span>📚 ${prisoner.education || "No education"}</span>
+                                <span><i class='bx bx-location-plus'></i> ${prisoner.prison_block || "Unknown"}</span>
+                                <span><i class='bx bx-book-reader'></i> ${prisoner.education || "No education"}</span>
                             </div>
-                            ${prisoner.skills ? `<div class="profile-details">🔧 ${prisoner.skills.substring(0, 50)}${prisoner.skills.length > 50 ? "..." : ""}</div>` : ""}
+                            ${prisoner.skills ? `<div class="profile-details"> <i class='bx bx-wrench'></i> ${prisoner.skills.substring(0, 50)}${prisoner.skills.length > 50 ? "..." : ""}</div>` : ""}
                         </div>
                     </div>
                 `;
           })
           .join("");
 
-        // Show/hide load more button
         const hasMore = endIndex < filteredPrisoners.length;
         document.getElementById("loadMoreBtn").style.display = hasMore
           ? "block"
@@ -629,13 +619,11 @@
         lightboxImage.src = hasPhoto ? prisoner.image_url : "";
         lightboxImage.alt = prisoner.name;
 
-        // Handle missing images
         if (!hasPhoto) {
           lightboxImage.src =
-            "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23667eea' width='400' height='400'/%3E%3Ctext x='200' y='220' text-anchor='middle' fill='white' font-size='100' dy='.3em'%3E👤%3C/text%3E%3C/svg%3E";
+            "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23667eea' width='400' height='400'/%3E%3Ctext x='200' y='220' text-anchor='middle' fill='white' font-size='100' dy='.3em'%3E%3C/text%3E%3C/svg%3E";
         }
 
-        // Get enrollment stats
         const programEnrollments = prisoner.programs_enrolled || 0;
         const completionRate = prisoner.completion_rate || 0;
 
@@ -643,24 +631,24 @@
                 <h2 style="color: var(--primary-color); margin-bottom: 10px;">${prisoner.name}</h2>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
                     <div>
-                        <p><strong>🆔 ID Number:</strong> ${prisoner.id_number || "N/A"}</p>
-                        <p><strong>📅 Admission:</strong> ${formatDate(prisoner.admission_date)}</p>
-                        <p><strong>📍 Facility:</strong> ${prisoner.prison_block || "N/A"}</p>
-                        <p><strong>🎂 Age:</strong> ${prisoner.age || "N/A"} years</p>
+                        <p><strong><i class='bx bx-id-card'></i> ID Number:</strong> ${prisoner.id_number || "N/A"}</p>
+                        <p><strong><i class='bx bx-calendar'></i> Admission:</strong> ${formatDate(prisoner.admission_date)}</p>
+                        <p><strong><i class='bx bx-map'></i> Facility:</strong> ${prisoner.prison_block || "N/A"}</p>
+                        <p><strong><i class='bx bxs-birthday'></i> Age:</strong> ${prisoner.age || "N/A"} years</p>
                     </div>
                     <div>
-                        <p><strong>⚖️ Sentence:</strong> ${prisoner.sentence_length || "N/A"}</p>
-                        <p><strong>📚 Education:</strong> ${prisoner.education || "N/A"}</p>
-                        <p><strong>🔧 Skills:</strong> ${prisoner.skills || "N/A"}</p>
-                        <p><strong>💍 Marital Status:</strong> ${prisoner.marital_status || "N/A"}</p>
+                        <p><strong><i class='bx bxs-scales'></i> Sentence:</strong> ${prisoner.sentence_length || "N/A"}</p>
+                        <p><strong><i class='bx bx-book-reader'></i> Education:</strong> ${prisoner.education || "N/A"}</p>
+                        <p><strong><i class='bx bx-wrench'></i> Skills:</strong> ${prisoner.skills || "N/A"}</p>
+                        <p><strong><i class='bx bxs-ring'></i> Marital Status:</strong> ${prisoner.marital_status || "N/A"}</p>
                     </div>
                     <div>
-                        <p><strong>📊 Enrollment Status:</strong> ${getStatusBadgeHTML(prisoner.enrollment_status)}</p>
-                        <p><strong>📖 Programs Enrolled:</strong> ${programEnrollments}</p>
-                        <p><strong>📈 Completion Rate:</strong> ${completionRate}%</p>
+                        <p><strong><i class='bx bx-bar-chart'></i> Enrollment Status:</strong> ${getStatusBadgeHTML(prisoner.enrollment_status)}</p>
+                        <p><strong><i class='bx bx-book'></i> Programs Enrolled:</strong> ${programEnrollments}</p>
+                        <p><strong><i class='bx bxs-bar-chart'></i> Completion Rate:</strong> ${completionRate}%</p>
                     </div>
                 </div>
-                ${prisoner.notes ? `<div style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 8px;"><strong>📝 Notes:</strong><br>${prisoner.notes}</div>` : ""}
+                ${prisoner.notes ? `<div style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 8px;"><strong><i class='bx bx-message-square-dots'></i> Notes:</strong><br>${prisoner.notes}</div>` : ""}
                 <div style="margin-top: 15px; text-align: center;">
                     <button class="btn-primary" onclick="window.location.href='/profile.html?id=${prisoner.id}'">View Full Profile →</button>
                 </div>
@@ -700,7 +688,6 @@
         });
       }
 
-      // Search functionality
       document
         .getElementById("searchGallery")
         ?.addEventListener("input", () => {
@@ -730,7 +717,6 @@
         }
       }
 
-      // Close lightbox with escape key
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
           closeLightbox();
@@ -741,7 +727,6 @@
         }
       });
 
-      // Make functions global
       window.filterGallery = filterGallery;
       window.refreshGallery = refreshGallery;
       window.loadMore = loadMore;

@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard - Prisoner Rehab System</title>
 
-    <!-- Boxicons CSS -->
     <link
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
       rel="stylesheet"
@@ -185,7 +184,7 @@
               class="theme-toggle"
               onclick="toggleTheme()"
             >
-              🌙
+              <i class="bx bx-moon"></i>
             </button>
             <button
               class="logout-btn"
@@ -198,7 +197,7 @@
                 margin-right: 15px;
               "
             >
-              🔐 Change Password
+              <i class="bx bx-lock-alt"></i> Change Password
             </button>
 
             <button class="logout-btn" onclick="handleLogout()">Logout</button>
@@ -234,37 +233,35 @@
             </div>
           </div>
 
-          <!-- Mini Charts Section -->
           <div class="charts-row">
             <div class="chart-mini-card">
               <div class="chart-title">
-                <span>📈 Enrollment Trends</span>
+                <span
+                  ><i class="bx bxs-bar-chart-square"></i> Enrollment
+                  Trends</span
+                >
                 <span class="trend-up" id="trendIndicator">↑ +12%</span>
               </div>
               <div class="chart-value" id="totalEnrollmentsChart">0</div>
-              <div class="simple-line-chart" id="enrollmentTrendChart">
-                <!-- Bars will be added dynamically -->
-              </div>
+              <div class="simple-line-chart" id="enrollmentTrendChart"></div>
             </div>
 
             <div class="chart-mini-card">
               <div class="chart-title">
-                <span>📊 Program Completion Rates</span>
+                <span> Program Completion Rates</span>
                 <span>Last 6 months</span>
               </div>
-              <div class="chart-bars" id="completionRatesChart">
-                <!-- Bars will be added dynamically -->
-              </div>
+              <div class="chart-bars" id="completionRatesChart"></div>
             </div>
 
             <div class="chart-mini-card">
               <div class="chart-title">
-                <span>🎯 Program Distribution</span>
+                <span>
+                  <i class="bx bxs-pie-chart-alt"></i>Program Distribution</span
+                >
                 <span>By category</span>
               </div>
-              <div class="chart-bars" id="programDistributionChart">
-                <!-- Distribution bars -->
-              </div>
+              <div class="chart-bars" id="programDistributionChart"></div>
             </div>
           </div>
 
@@ -322,11 +319,10 @@
       </div>
     </div>
 
-    <!-- Change Password Modal -->
     <div id="changePasswordModal" class="modal">
       <div class="modal-content">
         <div class="modal-header">
-          <h3>🔐 Change Password</h3>
+          <h3><i class="bx bx-lock-alt"></i> Change Password</h3>
           <span class="close-modal" onclick="closePasswordModal()"
             >&times;</span
           >
@@ -395,7 +391,6 @@
     </div>
 
     <script>
-      // Utility Functions
       function showNotification(message, type = "success") {
         const notification = document.createElement("div");
         notification.className = `notification ${type}`;
@@ -437,10 +432,8 @@
         }
       }
 
-      // Load Dashboard Data
       async function loadDashboard() {
         try {
-          // Load stats
           const statsResponse = await fetch("/api/dashboard/stats");
           const stats = await statsResponse.json();
 
@@ -460,33 +453,27 @@
               ? "12 pending review"
               : "No sessions this month";
 
-          // Load recent activities
           await loadRecentActivities();
 
-          // Load mini charts
           await loadMiniCharts();
         } catch (error) {
           console.error("Error loading dashboard:", error);
           showNotification("Failed to load dashboard data", "error");
         }
       }
-      
+
       async function loadMiniCharts() {
         try {
-          // Get enrollment data
           const enrollmentsResponse = await fetch("/api/enrollments?limit=100");
           const enrollmentsData = await enrollmentsResponse.json();
           const enrollments = enrollmentsData.enrollments || [];
 
-          // Get programs data
           const programsResponse = await fetch("/api/programs");
           const programs = await programsResponse.json();
 
-          // Display total enrollments
           document.getElementById("totalEnrollmentsChart").textContent =
             enrollments.length;
 
-          // 1. Enrollment Trend Chart (last 6 months)
           const last6Months = getLast6Months();
           const monthlyEnrollments = calculateMonthlyEnrollments(
             enrollments,
@@ -509,7 +496,6 @@
             )
             .join("");
 
-          // Calculate trend percentage
           const lastMonth =
             monthlyEnrollments[monthlyEnrollments.length - 1]?.count || 0;
           const prevMonth =
@@ -523,7 +509,6 @@
           trendElement.className =
             trendPercent >= 0 ? "trend-up" : "trend-down";
 
-          // 2. Program Completion Rates Chart
           const programCompletions = [];
           for (const program of programs.slice(0, 5)) {
             const statsResponse = await fetch(
@@ -556,7 +541,6 @@
             )
             .join("");
 
-          // 3. Program Distribution by Category
           const categoryCount = {
             Vocational: 0,
             Educational: 0,
@@ -635,7 +619,7 @@
           return { month: month.month, count };
         });
       }
-      // Load Recent Activities with proper date handling
+
       async function loadRecentActivities() {
         try {
           const response = await fetch("/api/dashboard/recent-activity");
@@ -646,10 +630,8 @@
           if (activities && activities.length > 0) {
             tbody.innerHTML = activities
               .map((activity) => {
-                // Get the best available date
                 let displayDate = "No date";
 
-                // Try multiple possible date fields
                 const dateValue =
                   activity.formatted_date ||
                   activity.activity_date ||
@@ -659,7 +641,6 @@
                   displayDate = formatDisplayDate(dateValue);
                 }
 
-                // If still no date, try to get from activity_date directly
                 if (displayDate === "No date" && activity.activity_date) {
                   displayDate = formatDisplayDate(activity.activity_date);
                 }
@@ -693,7 +674,6 @@
         }
       }
 
-      // Password Change Functions
       function openPasswordModal() {
         const modal = document.getElementById("changePasswordModal");
         if (modal) {
@@ -731,7 +711,6 @@
         return "strong";
       }
 
-      // Password form event listeners
       document.addEventListener("DOMContentLoaded", function () {
         const newPasswordInput = document.getElementById("newPassword");
         if (newPasswordInput) {
@@ -811,7 +790,6 @@
         }
       });
 
-      // Close modal when clicking outside
       window.onclick = function (event) {
         const modal = document.getElementById("changePasswordModal");
         if (event.target === modal) {
@@ -819,7 +797,6 @@
         }
       };
 
-      // Logout function
       async function handleLogout() {
         try {
           await fetch("/api/logout", { method: "POST" });
@@ -829,7 +806,6 @@
         }
       }
 
-      // Check authentication
       async function checkAuth() {
         try {
           const response = await fetch("/api/check-auth");
@@ -850,12 +826,10 @@
         }
       }
 
-      // Make functions global
       window.openPasswordModal = openPasswordModal;
       window.closePasswordModal = closePasswordModal;
       window.handleLogout = handleLogout;
 
-      // Initialize
       checkAuth();
     </script>
     <script src="/js/theme.js"></script>

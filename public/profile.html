@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Prisoner Profile - Rehab System</title>
-    <!-- Boxicons CSS -->
+
     <link
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
       rel="stylesheet"
@@ -100,24 +100,24 @@
                             ${
                               hasPhoto
                                 ? `<img src="${prisoner.image_url}" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; margin-bottom: 15px;">`
-                                : `<div style="width: 150px; height: 150px; background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px auto; font-size: 64px;">👤</div>`
+                                : `<div style="width: 150px; height: 150px; background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px auto; font-size: 64px;"><i class='bx bx-user-circle'></i></div>`
                             }
                             <h2 class="profile-name" style="color: var(--text-color);">${prisoner.name || "N/A"}</h2>
-                            <p class="profile-id" style="color: var(--gray);">ID: ${prisoner.id_number || "N/A"}</p>
-                            <p class="profile-facility" style="color: var(--gray);">🏢 ${prisoner.prison_block || "N/A"}</p>
+                            <p class="profile-id" style="color: var(--gray);"><i class='bx bx-id-card' ></i>ID: ${prisoner.id_number || "N/A"}</p>
+                            <p class="profile-facility" style="color: var(--gray);"> <i class='bx bx-location-plus'></i> ${prisoner.prison_block || "N/A"}</p>
                             <hr style="margin: 15px 0; border-color: var(--border-color);">
                             <div style="text-align: left;">
-                                <p><strong>📅 Admission:</strong> ${formatDate(prisoner.admission_date)}</p>
-                                <p><strong>📏 Sentence:</strong> ${prisoner.sentence_length || "N/A"}</p>
-                                <p><strong>📊 Status:</strong> ${getStatusBadge(prisoner.enrollment_status)}</p>
+                                <p><strong><i class='bx bx-calendar'></i> Admission:</strong> ${formatDate(prisoner.admission_date)}</p>
+                                <p><strong><i class='bx bx-bar-chart-square'></i> Sentence:</strong> ${prisoner.sentence_length || "N/A"}</p>
+                                <p><strong><i class='bx bx-bar-chart-square'></i> Status:</strong> ${getStatusBadge(prisoner.enrollment_status)}</p>
                             </div>
                         </div>
                         
-                        <!-- Right Column - Details -->
+                        
                         <div>
-                            <!-- Personal Information -->
+                            
                             <div class="profile-section" style="background: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-                                <h3 style="margin-bottom: 15px; color: var(--text-color);">📋 Personal Information</h3>
+                                <h3 style="margin-bottom: 15px; color: var(--text-color);"><i class='bx bx-user'></i> Personal Information</h3>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                                     <div><strong>Gender:</strong> ${prisoner.gender || "N/A"}</div>
                                     <div><strong>Age:</strong> ${prisoner.age || "N/A"} years</div>
@@ -128,9 +128,9 @@
                                 ${prisoner.notes ? `<div style="margin-top: 15px;"><strong>Notes:</strong><br>${prisoner.notes}</div>` : ""}
                             </div>
                             
-                            <!-- Enrolled Programs -->
+                            
                             <div class="profile-section" style="background: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-                                <h3 style="margin-bottom: 15px; color: var(--text-color);">📚 Enrolled Programs</h3>
+                                <h3 style="margin-bottom: 15px; color: var(--text-color);"><i class='bx bxs-graduation'></i> Enrolled Programs</h3>
                                 ${
                                   programs.length > 0
                                     ? `
@@ -168,9 +168,9 @@
                                 }
                             </div>
                             
-                            <!-- Recent Sessions -->
+                            
                             <div class="profile-section" style="background: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-                                <h3 style="margin-bottom: 15px; color: var(--text-color);">📅 Recent Session History</h3>
+                                <h3 style="margin-bottom: 15px; color: var(--text-color);"><i class='bx bx-history'></i> Recent Session History</h3>
                                 ${
                                   sessions.length > 0
                                     ? `
@@ -203,9 +203,9 @@
                                 }
                             </div>
                             
-                            <!-- Rehabilitation Forecast -->
+                            
                             <div class="forecast-card" style="background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); border-radius: 12px; padding: 20px; color: white;">
-                                <h4>🎯 Rehabilitation Forecast</h4>
+                                <h4><i class='bx bx-bullseye'></i> Rehabilitation Forecast</h4>
                                 <p>Based on current enrollment and participation rates, ${prisoner.name} is projected to complete their primary track 3 months early.</p>
                                 <a href="#" style="color: white; text-decoration: underline;">View Full Analytics →</a>
                             </div>

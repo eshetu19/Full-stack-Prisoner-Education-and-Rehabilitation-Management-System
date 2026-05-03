@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Staff Management - Rehab System</title>
-    <!-- Boxicons CSS -->
+    
     <link
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
       rel="stylesheet"
@@ -89,7 +89,7 @@
       </div>
     </div>
 
-    <!-- Add Staff Modal -->
+    
     <div id="addStaffModal" class="modal">
       <div class="modal-content" style="max-width: 550px">
         <div class="modal-header">
@@ -169,7 +169,7 @@
       </div>
     </div>
 
-    <!-- Edit Staff Modal -->
+    
     <div id="editStaffModal" class="modal">
       <div class="modal-content" style="max-width: 550px">
         <div class="modal-header">
@@ -225,7 +225,7 @@
       </div>
     </div>
 
-    <!-- View Staff Modal -->
+    
     <div id="viewStaffModal" class="modal">
       <div class="modal-content" style="max-width: 500px">
         <div class="modal-header">
@@ -242,7 +242,7 @@
     <script src="/js/theme.js"></script>
     <script src="/js/role-nav.js"></script>
     <script>
-      // Utility Functions
+      
       function showNotification(message, type = "success") {
         const notification = document.createElement("div");
         notification.className = `notification ${type}`;
@@ -320,16 +320,16 @@
                 (staff) => `
                         <tr>
                             <td>
-                                ${staff.image_url ? `<img src="${staff.image_url}" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover; margin-right: 10px; vertical-align: middle;">` : '<span style="font-size: 24px; margin-right: 10px;">👤</span>'}
+                                ${staff.image_url ? `<img src="${staff.image_url}" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover; margin-right: 10px; vertical-align: middle;">` : '<span style="font-size: 24px; margin-right: 10px;"><i class="bx bx-user"></i></span>'}
                                 ${staff.name || "N/A"}
                             </td>
                             <td>${staff.role || "N/A"}</td>
                             <td>${staff.facility || "N/A"}</td>
                             <td>${getStatusBadge(staff.employment_status)}</td>
                             <td class="action-icons">
-                                <button class="view-btn" onclick="viewStaff(${staff.id})" title="View">👁️</button>
-                                <button class="edit-btn" onclick="editStaff(${staff.id})" title="Edit">✏️</button>
-                                <button class="delete-btn" onclick="deleteStaff(${staff.id})" title="Delete">🗑️</button>
+                                <button class="view-btn" onclick="viewStaff(${staff.id})" title="View"><i class='bx bx-show'></i></button>
+                                <button class="edit-btn" onclick="editStaff(${staff.id})" title="Edit"><i class='bx bxs-edit-alt'></i></button>
+                                <button class="delete-btn" onclick="deleteStaff(${staff.id})" title="Delete"><i class='bx bx-trash'></i></button>
                             </td>
                         </tr>
                     `,
@@ -537,7 +537,7 @@
           }
         });
 
-      // Event listeners for filters
+      
       document.getElementById("searchInput")?.addEventListener("input", () => {
         currentPage = 1;
         loadStaff();
@@ -567,7 +567,7 @@
         window.location.href = "/index.html";
       }
 
-      // Theme toggle
+      
       function toggleTheme() {
         if (document.body.classList.contains("dark-mode")) {
           document.body.classList.remove("dark-mode");
@@ -580,14 +580,14 @@
         }
       }
 
-      // Initialize saved theme
+      
       const savedTheme = localStorage.getItem("theme");
       if (savedTheme === "dark") {
         document.body.classList.add("dark-mode");
         document.getElementById("themeToggle").textContent = "☀️";
       }
 
-      // Check authentication and admin access
+      
       async function checkAuth() {
         try {
           const response = await fetch("/api/check-auth");
@@ -602,7 +602,7 @@
           const userName = result.user?.username || "User";
           document.getElementById("userName").textContent = userName;
 
-          // Check if user is admin - if not, show access denied
+          
           if (userRole !== "admin") {
             const staffContent = document.getElementById("staffContent");
             staffContent.innerHTML = `
@@ -616,7 +616,7 @@
             return;
           }
 
-          // Load staff data for admin
+          
           staffContent.innerHTML = `
                     <div class="stats-grid">
                         <div class="stat-card">
@@ -671,7 +671,7 @@
                     <div class="pagination" id="pagination"></div>
                 `;
 
-          // Re-attach event listeners
+          
           document
             .getElementById("searchInput")
             ?.addEventListener("input", () => {
@@ -705,7 +705,7 @@
         }
       }
 
-      // Make functions global
+      
       window.openAddStaffModal = openAddStaffModal;
       window.closeModal = closeModal;
       window.goToPage = goToPage;

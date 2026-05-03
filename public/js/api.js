@@ -21,7 +21,6 @@ const API = {
     }
   },
 
-  // Auth
   login(username, password) {
     return this.request("/api/login", {
       method: "POST",
@@ -37,7 +36,6 @@ const API = {
     return this.request("/api/check-auth");
   },
 
-  // Prisoners
   getPrisoners(params = {}) {
     const query = new URLSearchParams(params).toString();
     return this.request(`/api/prisoners${query ? "?" + query : ""}`);
@@ -65,7 +63,6 @@ const API = {
     return this.request(`/api/prisoners/${id}`, { method: "DELETE" });
   },
 
-  // Programs
   getPrograms(params = {}) {
     const query = new URLSearchParams(params).toString();
     return this.request(`/api/programs${query ? "?" + query : ""}`);
@@ -93,7 +90,6 @@ const API = {
     return this.request(`/api/programs/${id}`, { method: "DELETE" });
   },
 
-  // Staff
   getStaff(params = {}) {
     const query = new URLSearchParams(params).toString();
     return this.request(`/api/staff${query ? "?" + query : ""}`);
@@ -117,7 +113,6 @@ const API = {
     return this.request(`/api/staff/${id}`, { method: "DELETE" });
   },
 
-  // Sessions
   addSession(data) {
     return this.request("/api/sessions", {
       method: "POST",
@@ -130,7 +125,6 @@ const API = {
     return this.request(`/api/sessions${query}`);
   },
 
-  
   deleteSession(id) {
     return this.request(`/api/sessions/${id}`, { method: "DELETE" });
   },
@@ -142,7 +136,6 @@ const API = {
     });
   },
 
-  // Enrollments
   addEnrollment(data) {
     return this.request("/api/enrollments", {
       method: "POST",
@@ -157,7 +150,6 @@ const API = {
     });
   },
 
-  
   deleteEnrollment(id) {
     return this.request(`/api/enrollments/${id}`, { method: "DELETE" });
   },
@@ -167,7 +159,6 @@ const API = {
     return this.request(`/api/enrollments${query ? "?" + query : ""}`);
   },
 
-  // Dashboard
   getDashboardStats() {
     return this.request("/api/dashboard/stats");
   },
@@ -176,12 +167,10 @@ const API = {
     return this.request("/api/dashboard/recent-activity");
   },
 
-  // Reports
   getProgramStats() {
     return this.request("/api/reports/program-stats");
   },
 
-  // Facilities
   getFacilities() {
     return this.request("/api/facilities");
   },
@@ -194,7 +183,6 @@ const API = {
   },
 };
 
-// Utility Functions
 function showNotification(message, type = "success") {
   const notification = document.createElement("div");
   notification.className = `notification ${type}`;
@@ -238,6 +226,3 @@ function getStatusBadge(status) {
   const className = statusMap[status] || "status-active";
   return `<span class="statuq s-badge ${className}">${status}</span>`;
 }
-
-
-

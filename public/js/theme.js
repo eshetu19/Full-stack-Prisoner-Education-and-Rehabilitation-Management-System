@@ -10,7 +10,6 @@
     }
   }
 
-  // Toggle between light and dark mode
   function toggleTheme() {
     if (document.body.classList.contains("dark-mode")) {
       document.body.classList.remove("dark-mode");
@@ -25,17 +24,20 @@
     }
   }
 
-  // Update the theme toggle button icon
+  
   function updateThemeIcon(mode) {
     const toggleBtn = document.getElementById("themeToggle");
     if (toggleBtn) {
-      toggleBtn.innerHTML = mode === "dark" ? "☀️ Light" : "🌙 Dark";
-      toggleBtn.title =
-        mode === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode";
+      if (mode === "dark") {
+        toggleBtn.innerHTML = '<i class="bx bx-sun"></i> Light';
+        toggleBtn.title = "Switch to Light Mode";
+      } else {
+        toggleBtn.innerHTML = '<i class="bx bx-moon"></i> Dark';
+        toggleBtn.title = "Switch to Dark Mode";
+      }
     }
   }
 
-  // Show notification
   function showNotification(message, type) {
     const notification = document.createElement("div");
     notification.className = `notification ${type}`;
@@ -55,7 +57,7 @@
     setTimeout(() => notification.remove(), 2000);
   }
 
-  // Add theme toggle button to user menu
+  
   function addThemeToggleButton() {
     const userMenu = document.querySelector(".user-menu");
     if (userMenu && !document.getElementById("themeToggle")) {
@@ -72,11 +74,11 @@
     }
   }
 
-  // Export to global
+  
   window.toggleTheme = toggleTheme;
   window.initTheme = initTheme;
 
-  // Initialize when DOM is ready
+  
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
       initTheme();

@@ -9,9 +9,9 @@ const db = mysql.createConnection({
   database: process.env.DB_NAME || "prison_rehab_system",
 });
 
-console.log("🔧 Assigning prisoners and programs to instructor...\n");
+console.log(" Assigning prisoners and programs to instructor...\n");
 
-// Get instructor ID
+
 db.query(
   "SELECT id FROM users WHERE role = 'instructor' LIMIT 1",
   (err, instructors) => {
@@ -31,19 +31,19 @@ db.query(
             console.error("Error creating instructor:", err);
             process.exit(1);
           }
-          console.log("✅ Instructor created with ID:", result.insertId);
+          console.log("Instructor created with ID:", result.insertId);
           assignToInstructor(result.insertId);
         },
       );
     } else {
-      console.log("✅ Found instructor with ID:", instructors[0].id);
+      console.log(" Found instructor with ID:", instructors[0].id);
       assignToInstructor(instructors[0].id);
     }
   },
 );
 
 function assignToInstructor(instructorId) {
-  // Assign all prisoners
+  
   db.query(
     "INSERT IGNORE INTO case_assignments (user_id, prisoner_id) SELECT ?, id FROM prisoners",
     [instructorId],
@@ -51,10 +51,10 @@ function assignToInstructor(instructorId) {
       if (err) console.error("Error assigning prisoners:", err);
       else
         console.log(
-          `✅ Assigned ${result.affectedRows} prisoners to instructor`,
+          ` Assigned ${result.affectedRows} prisoners to instructor`,
         );
 
-      // Assign all active programs
+      
       db.query(
         "INSERT IGNORE INTO instructor_programs (user_id, program_id) SELECT ?, id FROM programs WHERE status = 'Active'",
         [instructorId],
@@ -62,10 +62,10 @@ function assignToInstructor(instructorId) {
           if (err) console.error("Error assigning programs:", err);
           else
             console.log(
-              `✅ Assigned ${result.affectedRows} programs to instructor`,
+              ` Assigned ${result.affectedRows} programs to instructor`,
             );
 
-          // Verify assignments
+          
           db.query(
             `
                 SELECT 'Prisoners:' as type, p.name 
@@ -75,7 +75,7 @@ function assignToInstructor(instructorId) {
             `,
             [instructorId],
             (err, prisoners) => {
-              console.log("\n📋 Assigned Prisoners:");
+              console.log("\n Assigned Prisoners:");
               if (prisoners && prisoners.length > 0) {
                 prisoners.forEach((p) => console.log(`   - ${p.name}`));
               } else {
@@ -91,7 +91,7 @@ function assignToInstructor(instructorId) {
                 `,
                 [instructorId],
                 (err, programs) => {
-                  console.log("\n📚 Assigned Programs:");
+                  console.log("\n Assigned Programs:");
                   if (programs && programs.length > 0) {
                     programs.forEach((p) => console.log(`   - ${p.name}`));
                   } else {
@@ -99,7 +99,7 @@ function assignToInstructor(instructorId) {
                   }
 
                   console.log(
-                    "\n✨ Done! Login as instructor to see the data.",
+                    "\n Done! Login as instructor to see the data.",
                   );
                   db.end();
                 },

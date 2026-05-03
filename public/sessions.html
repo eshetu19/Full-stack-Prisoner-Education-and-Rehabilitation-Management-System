@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sessions - Rehab System</title>
-    <!-- Boxicons CSS -->
+
     <link
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
       rel="stylesheet"
@@ -150,7 +150,6 @@
       </div>
     </div>
 
-    <!-- Schedule Session Modal -->
     <div id="scheduleModal" class="modal">
       <div class="modal-content" style="max-width: 500px">
         <div class="modal-header">
@@ -240,14 +239,14 @@
                             </div>
                             <div class="session-info">
                                 <h3>${session.title}</h3>
-                                <p>📍 ${session.location} | 👤 ${session.coordinator} | ⏱️ ${session.duration}</p>
+                                <p><i class='bx bx-location-plus'></i> ${session.location} | <i class='bx bx-user-circle'></i> ${session.coordinator} | <i class='bx bx-time-five'></i> ${session.duration}</p>
                                 <small>Prisoner: ${session.prisoner_name || "Group Session"}</small>
                             </div>
                             <div>
                                 ${getStatusBadge(session.status)}
                                 <div class="action-icons" style="margin-top: 10px;">
-                                    <button class="edit-btn" onclick="editSession(${session.id})">✏️</button>
-                                    <button class="delete-btn" onclick="deleteSession(${session.id})">🗑️</button>
+                                    <button class="edit-btn" onclick="editSession(${session.id})"><i class='bx bxs-edit'></i></button>
+                                    <button class="delete-btn" onclick="deleteSession(${session.id})"><i class='bx bx-trash'></i></button>
                                 </div>
                             </div>
                         </div>
@@ -260,7 +259,7 @@
       }
 
       async function openScheduleModal() {
-        // Load prisoners for dropdown
+        
         const prisoners = await API.getPrisoners();
         const prisonerSelect = document.querySelector(
           'select[name="prisoner_id"]',

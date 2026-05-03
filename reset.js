@@ -8,11 +8,11 @@ const db = mysql.createConnection({
     port: process.env.DB_PORT || 3306
 });
 
-console.log('🗑️  Resetting database...');
+console.log('  Resetting database...');
 
 db.query(`DROP DATABASE IF EXISTS ${process.env.DB_NAME || 'prison_rehab_system'}`, (err) => {
     if (err) throw err;
-    console.log('✅ Database dropped');
+    console.log(' Database dropped');
     db.end();
     console.log('Run "npm run seed" to recreate the database');
 });

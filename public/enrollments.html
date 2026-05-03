@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Enrollments - Rehab System</title>
-    <!-- Boxicons CSS -->
+
     <link
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
       rel="stylesheet"
@@ -204,7 +204,6 @@
       </div>
     </div>
 
-    <!-- New Enrollment Modal -->
     <div id="enrollmentModal" class="modal">
       <div class="modal-content" style="max-width: 500px">
         <div class="modal-header">
@@ -251,7 +250,6 @@
       </div>
     </div>
 
-    <!-- Update Progress Modal -->
     <div id="progressModal" class="modal">
       <div class="modal-content" style="max-width: 400px">
         <div class="modal-header">
@@ -301,7 +299,6 @@
     <script src="/js/theme.js"></script>
     <script src="/js/role-nav.js"></script>
     <script>
-      // Utility Functions
       function showNotification(message, type = "success") {
         const notification = document.createElement("div");
         notification.className = `notification ${type}`;
@@ -339,7 +336,6 @@
       let currentPage = 1;
       let totalPages = 1;
 
-      // Load Enrollments
       async function loadEnrollments() {
         try {
           const search = document.getElementById("searchInput")?.value || "";
@@ -350,7 +346,6 @@
           );
           const data = await response.json();
 
-          // Update stats cards
           document.getElementById("totalEnrollments").textContent =
             data.stats?.totalEnrollments || 0;
           document.getElementById("activeEnrollments").textContent =
@@ -389,8 +384,8 @@
                                     <small>ID: ${enrollment.id_number || "N/A"}</small>
                                 </div>
                                 <div class="action-icons">
-                                    <button class="edit-btn" onclick="updateProgress(${enrollment.id}, ${enrollment.completion_percentage || 0}, '${enrollment.status}')">📊 Update Progress</button>
-                                    <button class="delete-btn" onclick="deleteEnrollment(${enrollment.id})">🗑️ Remove</button>
+                                    <button class="edit-btn" onclick="updateProgress(${enrollment.id}, ${enrollment.completion_percentage || 0}, '${enrollment.status}')"><i class='bx bxs-edit'></i> Update Progress</button>
+                                    <button class="delete-btn" onclick="deleteEnrollment(${enrollment.id})"><i class='bx bx-trash'></i>  Remove</button>
                                 </div>
                             </div>
                         </div>
@@ -614,7 +609,6 @@
         }
       }
 
-      // Global functions
       window.openNewEnrollmentModal = openNewEnrollmentModal;
       window.closeModal = closeModal;
       window.goToPage = goToPage;
@@ -624,7 +618,6 @@
       window.showNotification = showNotification;
       window.loadEnrollments = loadEnrollments;
 
-      // Event listeners
       document.getElementById("searchInput")?.addEventListener("input", () => {
         currentPage = 1;
         loadEnrollments();
@@ -637,10 +630,8 @@
           loadEnrollments();
         });
 
-      // Initialize
       checkAuth();
 
-      // Theme toggle function
       window.toggleTheme = function () {
         if (document.body.classList.contains("dark-mode")) {
           document.body.classList.remove("dark-mode");

@@ -47,7 +47,7 @@
 
     <script src="/js/api.js"></script>
     <script>
-      // Show notification function
+      
       function showNotification(message, type = "success") {
         const notification = document.createElement("div");
         notification.className = `notification ${type}`;
@@ -76,7 +76,7 @@
           const password = document.getElementById("password").value;
           const loginBtn = document.querySelector(".login-btn");
 
-          // Show loading state
+          
           const originalText = loginBtn.textContent;
           loginBtn.textContent = "Logging in...";
           loginBtn.disabled = true;
@@ -92,7 +92,7 @@
             const result = await response.json();
 
             if (result.success) {
-              // Store user role and username for role-based navigation
+              
               localStorage.setItem("userRole", result.user.role);
               localStorage.setItem("username", result.user.username);
 
@@ -126,7 +126,7 @@
           }
         });
 
-      // Load remembered username
+      
       const remembered = localStorage.getItem("rememberedUser");
       if (remembered) {
         document.getElementById("username").value = remembered;

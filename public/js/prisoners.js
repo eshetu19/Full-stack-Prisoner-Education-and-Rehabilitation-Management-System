@@ -19,7 +19,7 @@ async function loadPrisoners() {
 
     if (!tbody) return;
 
-    // Update stats cards
+    
     document.getElementById("totalPrisoners").textContent = data.total || 0;
     document.getElementById("enrolledCount").textContent =
       data.stats?.enrolledCount || 0;
@@ -28,7 +28,7 @@ async function loadPrisoners() {
     document.getElementById("completionRate").textContent =
       (data.stats?.avgCompletion || 0) + "%";
 
-    // Render prisoners table
+    
     if (data.prisoners && data.prisoners.length > 0) {
       tbody.innerHTML = data.prisoners
         .map((prisoner) => {
@@ -60,10 +60,16 @@ async function loadPrisoners() {
                         <td>${getStatusBadge(prisoner.enrollment_status)}</td>
                         <td>${programCell}</td>
                         <td class="action-icons">
-                            <button class="view-btn" onclick="viewPrisoner(${prisoner.id})">👁️</button>
-                            <button class="edit-btn" onclick="editPrisoner(${prisoner.id})">✏️</button>
-                            <button class="delete-btn" onclick="deletePrisoner(${prisoner.id})">🗑️</button>
-                        </td>
+    <button class="view-btn" onclick="viewPrisoner(${prisoner.id})" title="View">
+        <i class='bx bx-show'></i>
+    </button>
+    <button class="edit-btn" onclick="editPrisoner(${prisoner.id})" title="Edit">
+        <i class='bx bx-edit-alt'></i>
+    </button>
+    <button class="delete-btn" onclick="deletePrisoner(${prisoner.id})" title="Delete">
+        <i class='bx bx-trash'></i>
+    </button>
+</td>
                     </tr>
                 `;
         })
@@ -131,7 +137,6 @@ function closeModal(modalId) {
   }
 }
 
-// Handle Add Prisoner Form Submission
 document
   .getElementById("addPrisonerForm")
   ?.addEventListener("submit", async (e) => {
@@ -190,7 +195,6 @@ function editPrisoner(id) {
   showNotification("Edit feature coming soon", "info");
 }
 
-// Event listeners for filters
 document.getElementById("searchInput")?.addEventListener("input", () => {
   currentPage = 1;
   loadPrisoners();
@@ -234,7 +238,6 @@ async function checkAuth() {
   }
 }
 
-// Make functions global
 window.openAddPrisonerModal = openAddPrisonerModal;
 window.closeModal = closeModal;
 window.goToPage = goToPage;
@@ -243,5 +246,4 @@ window.editPrisoner = editPrisoner;
 window.deletePrisoner = deletePrisoner;
 window.handleLogout = handleLogout;
 
-// Initialize
 checkAuth();

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Programs - Rehab System</title>
-    <!-- Boxicons CSS -->
+   
     <link
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
       rel="stylesheet"
@@ -102,7 +102,7 @@
       </div>
     </div>
 
-    <!-- Add Program Modal -->
+    
     <div id="addProgramModal" class="modal">
       <div class="modal-content">
         <div class="modal-header">
@@ -165,12 +165,12 @@
       });
     </script>
     <script>
-      // Show/hide add button based on role
+      
       document.addEventListener("DOMContentLoaded", async function () {
         await displayUserInfo();
         await initRoleBasedNavigation();
 
-        // Check if user is admin to show add program button
+        
         const userRole = localStorage.getItem("userRole");
         const addProgramBtn = document.getElementById("addProgramBtn");
         if (addProgramBtn && userRole === "admin") {
