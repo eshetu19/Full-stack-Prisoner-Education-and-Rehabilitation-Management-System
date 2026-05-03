@@ -13,14 +13,14 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use("/uploads", express.static("uploads"));
 
-// Session middleware
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "your-secret-key",
@@ -30,12 +30,12 @@ app.use(
   }),
 );
 
-// Create uploads directory if not exists
+
 if (!fs.existsSync("./uploads")) {
   fs.mkdirSync("./uploads");
 }
 
-// Configure multer for file uploads
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "./uploads/");
@@ -46,8 +46,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-// Database connection
-// Hardcoded for Railway (temporary fix)
+
 const db = mysql.createConnection({
     host: 'shuttle.proxy.rlwy.net',
     user: 'root',
@@ -56,9 +55,7 @@ const db = mysql.createConnection({
     port: 44233
 });
 
-//  ROLE-BASED MIDDLEWARE
 
-// Log user activity - MUST BE DEFINED BEFORE USE
 function logActivity(req, action, details = null) {
   if (req.session && req.session.userId) {
     const query = `INSERT INTO activity_log (user_id, username, action, details, ip_address) 
@@ -75,7 +72,7 @@ function logActivity(req, action, details = null) {
   }
 }
 
-// Check if user is authenticated
+
 function isAuthenticated(req, res, next) {
   if (!req.session.userId) {
     return res.status(401).json({ error: "Not authenticated" });
@@ -83,7 +80,7 @@ function isAuthenticated(req, res, next) {
   next();
 }
 
-// Check if user is admin
+
 function isAdmin(req, res, next) {
   if (!req.session.userId) {
     return res.status(401).json({ error: "Not authenticated" });
@@ -94,7 +91,7 @@ function isAdmin(req, res, next) {
   next();
 }
 
-// Check if user is admin or instructor
+
 function isAdminOrInstructor(req, res, next) {
   if (!req.session.userId) {
     return res.status(401).json({ error: "Not authenticated" });
@@ -107,7 +104,7 @@ function isAdminOrInstructor(req, res, next) {
   next();
 }
 
-//  AUTHENTICATION ROUTES
+
 
 app.post("/api/login", async (req, res) => {
   const { username, password } = req.body;
@@ -177,7 +174,7 @@ app.get("/api/check-auth", (req, res) => {
   }
 });
 
-// Get user role endpoint
+
 app.get("/api/user-role", isAuthenticated, (req, res) => {
   res.json({
     role: req.session.role,
@@ -186,7 +183,7 @@ app.get("/api/user-role", isAuthenticated, (req, res) => {
   });
 });
 
-//  PRISONER ROUTES WITH ROLE-BASED ACCESS
+
 
 app.get("/api/prisoners", isAuthenticated, (req, res) => {
   const { search, block, status, page = 1, limit = 10 } = req.query;
@@ -200,7 +197,7 @@ app.get("/api/prisoners", isAuthenticated, (req, res) => {
   let countQuery = "SELECT COUNT(*) as total FROM prisoners WHERE 1=1";
   let params = [];
 
-  // Role-based filtering
+
   if (userRole === "instructor") {
     query += ` AND p.id IN (SELECT prisoner_id FROM case_assignments WHERE user_id = ?)`;
     countQuery += ` AND id IN (SELECT prisoner_id FROM case_assignments WHERE user_id = ?)`;
@@ -278,7 +275,7 @@ app.get("/api/prisoners", isAuthenticated, (req, res) => {
   });
 });
 
-// Get single prisoner - with role check
+
 app.get("/api/prisoners/:id", isAuthenticated, (req, res) => {
   const userRole = req.session.role;
   const userId = req.session.userId;
@@ -323,7 +320,7 @@ app.get("/api/prisoners/:id", isAuthenticated, (req, res) => {
     });
   }
 
-  // Check if instructor has access to this prisoner
+ 
   if (userRole === "instructor") {
     db.query(
       "SELECT * FROM case_assignments WHERE user_id = ? AND prisoner_id = ?",
@@ -343,7 +340,7 @@ app.get("/api/prisoners/:id", isAuthenticated, (req, res) => {
   }
 });
 
-// Add prisoner - Admin only
+
 app.post("/api/prisoners", isAdmin, upload.single("image"), (req, res) => {
   const {
     full_name,
@@ -387,7 +384,7 @@ app.post("/api/prisoners", isAdmin, upload.single("image"), (req, res) => {
   );
 });
 
-// Update prisoner - Admin only
+
 app.put("/api/prisoners/:id", isAdmin, upload.single("image"), (req, res) => {
   const { full_name, gender, age, sentence_length, prison, enrollment_status } =
     req.body;
@@ -420,7 +417,7 @@ app.put("/api/prisoners/:id", isAdmin, upload.single("image"), (req, res) => {
   });
 });
 
-// Delete prisoner - Admin only
+
 app.delete("/api/prisoners/:id", isAdmin, (req, res) => {
   db.query(
     "SELECT name FROM prisoners WHERE id = ?",
@@ -445,7 +442,7 @@ app.delete("/api/prisoners/:id", isAdmin, (req, res) => {
   );
 });
 
-// PROGRAM ROUTES
+
 
 app.get("/api/programs", isAuthenticated, (req, res) => {
   const { type, status } = req.query;
@@ -475,7 +472,7 @@ app.get("/api/programs", isAuthenticated, (req, res) => {
     res.json(results);
   });
 });
-// Add program - Admin only
+
 app.post("/api/programs", isAdmin, upload.single("thumbnail"), (req, res) => {
   const {
     program_title,
@@ -508,7 +505,7 @@ app.post("/api/programs", isAdmin, upload.single("thumbnail"), (req, res) => {
     },
   );
 });
-//  DASHBOARD STATS
+
 app.get("/api/dashboard/stats", isAuthenticated, (req, res) => {
   const userRole = req.session.role;
   const userId = req.session.userId;
@@ -520,7 +517,7 @@ app.get("/api/dashboard/stats", isAuthenticated, (req, res) => {
     "SELECT COUNT(*) as count FROM enrolled_programs WHERE status != 'Completed'";
   let sessionsThisMonthQuery = `SELECT COUNT(*) as count FROM sessions WHERE MONTH(session_date) = MONTH(CURDATE()) AND YEAR(session_date) = YEAR(CURDATE())`;
 
-  // For instructors, filter based on assignments
+
   if (userRole === "instructor") {
     totalPrisonersQuery = `SELECT COUNT(*) as count FROM prisoners p 
                            WHERE p.id IN (SELECT prisoner_id FROM case_assignments WHERE user_id = ${userId})`;
@@ -570,7 +567,7 @@ app.get("/api/dashboard/stats", isAuthenticated, (req, res) => {
     });
 });
 
-//  DASHBOARD RECENT ACTIVITY
+
 app.get("/api/dashboard/recent-activity", isAuthenticated, (req, res) => {
   const userRole = req.session.role;
   const userId = req.session.userId;
@@ -618,7 +615,7 @@ app.get("/api/dashboard/recent-activity", isAuthenticated, (req, res) => {
   });
 });
 
-//  REPORTS
+
 app.get("/api/reports/program-stats", isAuthenticated, (req, res) => {
   const userRole = req.session.role;
   const userId = req.session.userId;
@@ -676,9 +673,7 @@ app.get("/api/reports/program-stats", isAuthenticated, (req, res) => {
   });
 });
 
-//  ENROLLMENT ROUTES
 
-// Get all enrollments with pagination and stats
 app.get("/api/enrollments", isAuthenticated, (req, res) => {
   const { page = 1, limit = 10, status, search } = req.query;
   const userRole = req.session.role;
@@ -692,7 +687,7 @@ app.get("/api/enrollments", isAuthenticated, (req, res) => {
   let params = [];
   let conditions = [];
 
-  // Role-based filtering
+  
   if (userRole === "instructor") {
     conditions.push(
       "ep.prisoner_id IN (SELECT prisoner_id FROM case_assignments WHERE user_id = ?)",
@@ -725,13 +720,13 @@ app.get("/api/enrollments", isAuthenticated, (req, res) => {
     db.query(query, params, (err, results) => {
       if (err) return res.status(500).json({ error: err.message });
 
-      // Calculate statistics for cards
+     
       let activeQuery = `SELECT COUNT(*) as active FROM enrolled_programs WHERE status != 'Completed'`;
       let completedQuery = `SELECT COUNT(*) as completed FROM enrolled_programs WHERE status = 'Completed'`;
       let avgQuery = `SELECT AVG(completion_percentage) as avg FROM enrolled_programs`;
       let totalQuery = `SELECT COUNT(*) as total FROM enrolled_programs`;
 
-      // For instructors, filter stats
+    
       if (userRole === "instructor") {
         activeQuery = `SELECT COUNT(*) as active FROM enrolled_programs 
                        WHERE status != 'Completed' 
@@ -889,7 +884,7 @@ app.delete("/api/enrollments/:id", isAdmin, (req, res) => {
   );
 });
 
-//  STAFF ROUTES - Admin only
+
 app.get("/api/staff", isAdmin, (req, res) => {
   const { search, role, facility, status, page = 1, limit = 10 } = req.query;
   let query = "SELECT * FROM staff WHERE 1=1";
@@ -978,7 +973,7 @@ app.delete("/api/staff/:id", isAdmin, (req, res) => {
   });
 });
 
-// SESSION ROUTES
+
 app.post("/api/sessions", isAdminOrInstructor, (req, res) => {
   const { title, location, time, duration, coordinator, prisoner_id } =
     req.body;
@@ -1034,7 +1029,7 @@ app.delete("/api/sessions/:id", isAdminOrInstructor, (req, res) => {
   );
 });
 
-//  FACILITY MANAGEMENT
+
 app.get("/api/facilities", isAdmin, (req, res) => {
   db.query("SELECT * FROM facilities", (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
@@ -1077,7 +1072,7 @@ app.delete("/api/facilities/:id", isAdmin, (req, res) => {
   );
 });
 
-//  PASSWORD CHANGE ROUTE
+
 app.post("/api/change-password", isAuthenticated, async (req, res) => {
   const { currentPassword, newPassword } = req.body;
   const userId = req.session.userId;
@@ -1115,7 +1110,7 @@ app.post("/api/change-password", isAuthenticated, async (req, res) => {
   );
 });
 
-//  PROGRAM STATS ENDPOINT
+
 app.get("/api/programs/:id/stats", isAuthenticated, (req, res) => {
   const programId = req.params.id;
 
@@ -1139,7 +1134,7 @@ app.get("/api/programs/:id/stats", isAuthenticated, (req, res) => {
   );
 });
 
-//  PROGRAM ENROLLMENTS ENDPOINT
+
 app.get("/api/programs/:id/enrollments", isAuthenticated, (req, res) => {
   const programId = req.params.id;
   const userRole = req.session.role;
@@ -1151,7 +1146,7 @@ app.get("/api/programs/:id/enrollments", isAuthenticated, (req, res) => {
                WHERE ep.program_id = ?`;
   let params = [programId];
 
-  // For instructors, only show assigned prisoners
+
   if (userRole === "instructor") {
     query += ` AND p.id IN (SELECT prisoner_id FROM case_assignments WHERE user_id = ?)`;
     params.push(userId);
@@ -1163,7 +1158,7 @@ app.get("/api/programs/:id/enrollments", isAuthenticated, (req, res) => {
   });
 });
 
-//  SERVE HTML PAGES
+
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
