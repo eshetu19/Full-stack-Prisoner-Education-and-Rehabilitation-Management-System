@@ -9,7 +9,7 @@ const db = mysql.createConnection({
   port: process.env.DB_PORT || 3306,
 });
 
-console.log("🌱 Starting database seeding...");
+console.log(" Starting database seeding...");
 
 db.connect(async (err) => {
   if (err) {
@@ -19,7 +19,7 @@ db.connect(async (err) => {
 
   console.log("✅ Connected to MySQL");
 
-  // Create database if not exists
+  
   db.query(
     `CREATE DATABASE IF NOT EXISTS ${process.env.DB_NAME || "prison_rehab_system"}`,
     (err) => {
@@ -35,8 +35,8 @@ db.connect(async (err) => {
           await createTables();
           await insertSeedData();
 
-          console.log("\n🎉 Database seeding completed successfully!");
-          console.log("\n📝 Login Credentials:");
+          console.log("\n Database seeding completed successfully!");
+          console.log("\n Login Credentials:");
           console.log(
             "   Username: admin     | Password: admin123 | Role: Administrator",
           );
@@ -46,7 +46,7 @@ db.connect(async (err) => {
           console.log(
             "   Username: viewer1   | Password: admin123 | Role: Viewer",
           );
-          console.log("\n🚀 You can now start the server: npm start");
+          console.log("\n You can now start the server: npm start");
 
           db.end();
         },
@@ -234,19 +234,19 @@ async function createTables() {
 
 async function insertSeedData() {
   return new Promise((resolve, reject) => {
-    // Create a fresh hash for 
+  
     const hashedPassword = bcrypt.hashSync("admin123", 10);
     console.log("✅ Password hash created for admin123");
 
     const queries = [
-      // Users
+   
       `INSERT INTO users (id, username, password, role) VALUES 
                 (1, 'admin', '${hashedPassword}', 'admin'),
                 (2, 'instructor1', '${hashedPassword}', 'instructor'),
                 (3, 'viewer1', '${hashedPassword}', 'viewer')
                 ON DUPLICATE KEY UPDATE password = VALUES(password), role = VALUES(role)`,
 
-      // Facilities
+      
       `INSERT INTO facilities (id, name, capacity, status) VALUES 
                 (1, 'Kality Maremiya', 430, 'Complete'),
                 (2, 'Daleti Maremiya', 374, 'Complete'),
@@ -254,7 +254,7 @@ async function insertSeedData() {
                 (4, 'Kality Maremiya2', 122, 'Under Maintenance')
                 ON DUPLICATE KEY UPDATE name = VALUES(name)`,
 
-      // Prisoners
+     
       `INSERT INTO prisoners (id, id_number, name, gender, age, sentence_length, prison_block, enrollment_status, education, skills) VALUES 
                 (1, 'EPDR/77890', 'Markos Smith', 'Male', 31, '10 Years', 'Kaliti', 'Enrolled', 'High School', 'Carpentry, Woodworking'),
                 (2, 'EPDR/77891', 'Abubeker Nebiyu', 'Male', 29, '5 Years', 'Kaliti', 'Enrolled', 'Bachelor\'s', 'Teaching, Leadership'),
@@ -263,7 +263,7 @@ async function insertSeedData() {
                 (5, 'EPDR/77894', 'Habtom Seyoum', 'Male', 42, '15 Years', 'Kaliti', 'Not Enrolled', 'High School', 'Construction')
                 ON DUPLICATE KEY UPDATE name = VALUES(name)`,
 
-      // Programs
+    
       `INSERT INTO programs (id, name, program_type, instructor, duration, description, status, max_capacity) VALUES 
                 (1, 'Advanced Carpentry', 'Vocational', 'Ayinalem mulatu', '6 months', 'Professional carpentry and woodworking skills', 'Active', 50),
                 (2, 'GED Completion', 'Educational', 'Liam Rosenniro', '4 months', 'High school equivalency preparation', 'Active', 45),
@@ -273,7 +273,7 @@ async function insertSeedData() {
                 (6, 'Substance Abuse Program', 'Behavioral', 'Dr. Helen Clark', '6 months', 'Addiction recovery and support', 'Active', 50)
                 ON DUPLICATE KEY UPDATE name = VALUES(name)`,
 
-      // Enrollments
+     
       `INSERT INTO enrolled_programs (prisoner_id, program_id, enrollment_date, completion_percentage, status) VALUES 
                 (1, 1, '2023-10-03', 90, 'Completed'),
                 (1, 2, '2023-10-03', 30, 'In Progress'),
@@ -283,7 +283,7 @@ async function insertSeedData() {
                 (4, 3, '2023-12-01', 60, 'In Progress'),
                 (5, 4, '2023-10-10', 25, 'On Warning')`,
 
-      // Sessions
+   
       `INSERT INTO sessions (title, location, session_date, duration, coordinator, prisoner_id, status) VALUES 
                 ('Vocational Workshop', 'Workshop Building', NOW(), '2 hours', 'Ayinalem mulatu', 1, 'Completed'),
                 ('Counseling Session', 'Counseling Center', NOW(), '1 hour', 'Sarah Jenkins', 1, 'Completed'),
@@ -291,7 +291,7 @@ async function insertSeedData() {
                 ('Carpentry Class', 'Workshop', NOW(), '3 hours', 'Ayinalem mulatu', 2, 'Scheduled'),
                 ('Computer Lab', 'Computer Room', NOW(), '2 hours', 'Ayele Kebede', 3, 'Completed')`,
 
-      // Staff
+   
       `INSERT INTO staff (staff_id, name, gender, age, education, facility, role, email, employment_status) VALUES 
                 ('STF/001', 'Dr. Sarah Jenkins', 'Female', 45, 'PhD Psychology', 'Kaliti', 'Lead Instructor', 'sarah.jenkins@rehab.gov', 'Active'),
                 ('STF/002', 'Markos Smith', 'Male', 38, 'Masters Social Work', 'Daleti', 'Case Manager', 'markos.smith@rehab.gov', 'Active'),
@@ -300,12 +300,12 @@ async function insertSeedData() {
                 ('STF/005', 'Ins. Alemu Tola', 'Male', 35, 'Bachelor\'s', 'Kaliti', 'Security Liaison', 'alemu.tola@rehab.gov', 'Active'),
                 ('STF/006', 'Lomi Debebe', 'Female', 40, 'Masters', 'Daleti', 'Assistant Professor', 'lomi.debebe@rehab.gov', 'On leave')`,
 
-      // Instructor program assignments
+     
       `INSERT INTO instructor_programs (user_id, program_id) VALUES 
                 (2, 1), (2, 2), (2, 3)
                 ON DUPLICATE KEY UPDATE assigned_date = CURDATE()`,
 
-      // Case assignments
+     
       `INSERT INTO case_assignments (user_id, prisoner_id) VALUES 
                 (2, 1), (2, 2), (2, 3)
                 ON DUPLICATE KEY UPDATE assigned_date = CURDATE()`,
@@ -322,7 +322,7 @@ async function insertSeedData() {
           if (completed === queries.length) {
             console.log("✅ Seed data inserted");
 
-            // Verify users were inserted
+          
             db.query("SELECT id, username, role FROM users", (err, users) => {
               if (err) console.error("Error verifying users:", err);
               else {
