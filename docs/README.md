@@ -167,25 +167,24 @@ Viewer viewer1 admin123
   1024x768 minimum screen resolution
   ### System Architecture
   
-  │ Client Browser │
-  │ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐ │
-  │ │ HTML │ │ CSS │ │ JS │ │ Assets │ │
-  │ └─────────┘ └─────────┘ └─────────┘ └─────────┘ │
+   Client Browser 
+...................................
+ HTML  CSS  JS Assets 
+ .................................. 
  
-  │ HTTP/HTTPS
- 
-  │ Express Server │
-  │ ┌─────────────────────────────────────────────┐ │
-  │ │ API Routes / Middleware │ │
-  │ └─────────────────────────────────────────────┘ │
+   HTTP/HTTPS
+ ...................................
+   Express Server 
+ ...................................
+ API Routes / Middleware 
+ ....................................
   
-  │ SQL Queries
- 
-  │ MySQL Database │
-  │ ┌─────────────────────────────────────────────┐ │
-  │ │ Users | Prisoners | Programs | Sessions │ │
-  │ └─────────────────────────────────────────────┘ │
- 
+ SQL Queries
+ .....................................
+   MySQL Database 
+....................................... 
+  Users  Prisoners  Programs Sessions 
+........................................
 
 🔒 Security Features
 Password hashing with bcrypt
